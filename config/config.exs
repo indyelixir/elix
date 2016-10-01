@@ -6,6 +6,7 @@ config :elix, Elix.Robot,
   adapter: Hedwig.Adapters.Flowdock,
   name: "elix",
   aka: "/",
+  ignore_from_self?: true,
   token: System.get_env("FLOWDOCK_TOKEN"),
   responders: [
     {Hedwig.Responders.Ping, []},
