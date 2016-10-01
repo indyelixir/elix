@@ -3,11 +3,9 @@
 use Mix.Config
 
 config :elix, Elix.Robot,
-  adapter: Hedwig.Adapters.Flowdock,
   name: "elix",
   aka: "/",
   ignore_from_self?: true,
-  token: System.get_env("FLOWDOCK_TOKEN"),
   responders: [
     {Hedwig.Responders.Ping, []},
     {Hedwig.Responders.Help, []},
@@ -40,4 +38,4 @@ config :elix, Elix.Robot,
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-#     import_config "#{Mix.env}.exs"
+import_config "#{Mix.env}.exs"
