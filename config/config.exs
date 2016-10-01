@@ -8,6 +8,7 @@ config :elix, Elix.Robot,
   aka: "/",
   token: System.get_env("FLOWDOCK_TOKEN"),
   responders: [
+    {Hedwig.Responders.Ping, []},
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.ShipIt, []}
   ]
