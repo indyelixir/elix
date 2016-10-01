@@ -14,7 +14,7 @@ defmodule Elix.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :hedwig, :hedwig_flowdock],
+    [applications: [:logger, :hedwig, :hedwig_flowdock, :httpoison],
      mod: {Elix, []}]
   end
 
@@ -30,7 +30,8 @@ defmodule Elix.Mixfile do
   defp deps do
     [
       {:hedwig, github: "hedwig-im/hedwig"},
-      {:hedwig_flowdock, "~> 0.1"}
+      {:hedwig_flowdock, "~> 0.1"},
+      {:httpoison, "~> 0.9.0"}
     ]
   end
 end
