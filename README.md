@@ -1,6 +1,6 @@
 # Elix
 
-A hedwig chatbot for the Indy Elixir Flowdock flow.
+A [Hedwig](https://github.com/hedwig-im/hedwig) chatbot for the Indy Elixir Flowdock flow.
 
 ## Getting Set Up
 
@@ -20,4 +20,10 @@ steve> elix ping
 elix> pong
 steve> elix ship it
 elix> https://img.skitch.com/20111026-r2wsngtu4jftwxmsytdke6arwd.png
+```
+
+## Testing
+
+```
+$ mix test
 ```
