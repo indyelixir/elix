@@ -14,20 +14,34 @@ defmodule Elix.Responders.GifMe do
   gif me <term> - Replies with a GIF URL matching the term
   """
   hear ~r/gif me (.+)/i, msg do
-    api_url = build_api_url(msg.matches[0])
-    response = make_request(api_url)
+    reply(msg, get_gif_url(msg.matches[0]))
+  end
 
-    reply(msg, response)
+  defp get_gif_url(search_term) do
+    search_term
+    |> build_api_url
+    |> make_request
+    |> get_random_image_url
   end
 
   defp build_api_url(search_term) do
-    "#{@base_url}?q=#{URI.encode(search_term)}&api_key=#{@api_key}&limit=#{@sample_size}"
+    @base_url <> "?" <> build_query_string(search_term)
+  end
+
+  defp build_query_string(search_term) do
+    URI.encode_query(%{
+      q: search_term,
+      api_key: @api_key,
+      limit: @sample_size
+    })
   end
 
   defp make_request(api_url) do
-    {:ok, response} = HTTPoison.get(api_url)
-    parsed_response = Poison.decode!(response.body)
-    first_image = Enum.random(parsed_response["data"])
-    first_image["images"]["original"]["url"]
+    %HTTPoison.Response{body: body} = HTTPoison.get!(api_url)
+    Poison.decode!(body)
+  end
+
+  defp get_random_image_url(response) do
+    Enum.random(response["data"])["images"]["original"]["url"]
   end
 end
