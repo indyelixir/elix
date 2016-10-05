@@ -31,8 +31,7 @@ defmodule Elix.Mixfile do
     [
       {:hedwig, github: "hedwig-im/hedwig"},
       {:hedwig_flowdock, "~> 0.1"},
-      {:httpoison, "~> 0.9.0"},
-      {:exvcr, "~> 0.8.2", only: :test}
+      {:httpoison, "~> 0.9.0"}
     ]
   end
 end
