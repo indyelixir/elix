@@ -14,7 +14,7 @@ defmodule Elix.Responders.GifMe do
   gif me <term> - Replies with a GIF URL matching the term
   """
   hear ~r/gif me (.+)/i, msg do
-    reply(msg, get_gif_url(msg.matches[0]))
+    reply(msg, get_gif_url(msg.matches[1]))
   end
 
   defp get_gif_url(search_term) do
