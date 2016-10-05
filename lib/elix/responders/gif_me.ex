@@ -9,6 +9,7 @@ defmodule Elix.Responders.GifMe do
   @base_url "http://api.giphy.com/v1/gifs/search"
   @api_key "dc6zaTOxFJmzC" # Giphy’s public beta API key
   @sample_size 10
+  @api_client Application.get_env(:elix, :giphy_client)
 
   @usage """
   gif me <term> - Replies with a GIF URL matching the term
@@ -37,8 +38,8 @@ defmodule Elix.Responders.GifMe do
   end
 
   defp make_request(api_url) do
-    %HTTPoison.Response{body: body} = HTTPoison.get!(api_url)
-    Poison.decode!(body)
+    {:ok, response} = @api_client.get(api_url)
+    response
   end
 
   defp get_random_image_url(response) do
