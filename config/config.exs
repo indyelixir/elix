@@ -9,7 +9,8 @@ config :elix, Elix.Robot,
   responders: [
     {Hedwig.Responders.Ping, []},
     {Hedwig.Responders.Help, []},
-    {Hedwig.Responders.ShipIt, []}
+    {Hedwig.Responders.ShipIt, []},
+    {Elix.Responders.Guys, []}
   ]
 
 
