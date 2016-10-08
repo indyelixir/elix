@@ -17,8 +17,8 @@ defmodule Elix.Responders.GuysTest do
   end
 
   @tag start_robot: true, name: "elix", responders: [{Elix.Responders.Guys, []}]
-  test "guyser is ignored", %{adapter: adapter, msg: msg} do
-    send adapter, {:message, %{msg | text: "guyser"}}
-    refute_receive {:message}
+  test "guys as part of a longer word is ignored", %{adapter: adapter, msg: msg} do
+    send adapter, {:message, %{msg | text: "maguyser"}}
+    refute_receive {:message, %{}}
   end
 end
