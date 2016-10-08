@@ -1,5 +1,7 @@
 # Elix
 
+![Codeship Build Status](https://codeship.com/projects/88411dd0-6f86-0134-8d34-22394c4083ce/status?branch=master)
+
 A [Hedwig](https://github.com/hedwig-im/hedwig) chatbot for the Indy Elixir Flowdock flow.
 
 ## Getting Set Up
