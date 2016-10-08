@@ -20,12 +20,12 @@ defmodule Elix.Responders.GifMe do
 
   defp get_gif_url(search_term) do
     search_term
-    |> build_api_url
+    |> build_url
     |> make_request
-    |> get_random_image_url
+    |> handle_response
   end
 
-  defp build_api_url(search_term) do
+  defp build_url(search_term) do
     @base_url <> "?" <> build_query_string(search_term)
   end
 
@@ -38,11 +38,13 @@ defmodule Elix.Responders.GifMe do
   end
 
   defp make_request(api_url) do
-    {:ok, response} = @api_client.get(api_url)
-    response
+    @api_client.get(api_url)
   end
 
-  defp get_random_image_url(response) do
+  defp handle_response({:ok, response}) do
     Enum.random(response["data"])["images"]["original"]["url"]
+  end
+  defp handle_response({:error, _reason}) do
+    "I’m sorry, Giphy isn’t talking to me right now."
   end
 end
