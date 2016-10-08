@@ -3,4 +3,4 @@ use Mix.Config
 config :elix, Elix.Robot,
   adapter: Hedwig.Adapters.Console
 
-config :elix, :giphy_client, Elix.GiphyClient
+config :elix, :api_client, Elix.APIClient

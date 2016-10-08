@@ -1,4 +1,4 @@
-defmodule Elix.GiphyClientMock do
+defmodule Elix.APIClientMock do
 
   def get(_) do
     {:ok,
@@ -7,7 +7,7 @@ defmodule Elix.GiphyClientMock do
           %{
             "images" => %{
               "original" => %{
-                "url" => "http://test-gif-url.gif"
+                "url" => "http://giphy.com/test.gif"
               }
             }
           }
