@@ -3,7 +3,7 @@
 use Mix.Config
 
 config :elix, Elix.Robot,
-  name: "elix",
+  name: "Elix",
   aka: "/",
   ignore_from_self?: true,
   responders: [
