@@ -5,6 +5,7 @@ defmodule Elix.Mixfile do
     [app: :elix,
      version: "0.1.0",
      elixir: "~> 1.3",
+     elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -14,9 +15,13 @@ defmodule Elix.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :hedwig, :hedwig_flowdock],
+    [applications: [:logger, :hedwig, :hedwig_flowdock, :httpoison],
      mod: {Elix, []}]
   end
+
+  # Specifies which paths to compile per environment
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Dependencies can be Hex packages:
   #
@@ -30,7 +35,8 @@ defmodule Elix.Mixfile do
   defp deps do
     [
       {:hedwig, github: "hedwig-im/hedwig"},
-      {:hedwig_flowdock, "~> 0.1"}
+      {:hedwig_flowdock, "~> 0.1"},
+      {:httpoison, "~> 0.9.0"}
     ]
   end
 end
