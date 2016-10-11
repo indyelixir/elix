@@ -10,7 +10,8 @@ defmodule Elix.APIClient do
   Makes a GET request to a public API endpoint, returning a status tuple.
   """
   def get(url) do
-    HTTPoison.get(url)
+    url
+    |> HTTPoison.get()
     |> handle_response()
   end
 
