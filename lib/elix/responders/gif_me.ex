@@ -10,6 +10,7 @@ defmodule Elix.Responders.GifMe do
   @api_key "dc6zaTOxFJmzC" # Giphy’s public beta API key
   @sample_size 10
   @api_client Application.get_env(:elix, :api_client)
+  @rating "pg-13"
 
   @usage """
   gif me <term> - Replies with a GIF URL matching the term
@@ -33,7 +34,8 @@ defmodule Elix.Responders.GifMe do
     URI.encode_query(%{
       q: search_term,
       api_key: @api_key,
-      limit: @sample_size
+      limit: @sample_size,
+      rating: @rating
     })
   end
 

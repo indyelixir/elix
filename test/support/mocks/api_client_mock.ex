@@ -10,7 +10,7 @@ defmodule Elix.APIClientMock do
   Pattern-match on the URLs requested by tests in order to
   control the response.
   """
-  def get("http://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&limit=10&q=success") do
+  def get("http://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&limit=10&q=success&rating=pg-13") do
     {:ok,
       %{
         "data" => [
@@ -25,7 +25,7 @@ defmodule Elix.APIClientMock do
       }
     }
   end
-  def get("http://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&limit=10&q=error") do
+  def get("http://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&limit=10&q=error&rating=pg-13") do
     {:error, "Nope!"}
   end
 end
