@@ -11,7 +11,8 @@ config :elix, Elix.Robot,
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.ShipIt, []},
     {Elix.Responders.Guys, []},
-    {Elix.Responders.GifMe, []}
+    {Elix.Responders.GifMe, []},
+    {Elix.Responders.Lists, []}
   ]
 
 
