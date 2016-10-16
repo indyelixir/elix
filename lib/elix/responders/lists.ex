@@ -5,20 +5,20 @@ defmodule Elix.Responders.Lists do
   """
 
   use Hedwig.Responder
-  alias Elix.Lists
+  alias Elix.List
 
   @usage """
   show lists - Displays all lists
   """
   respond ~r/show lists\Z/i, msg do
-    reply(msg, render_items(Lists.all))
+    reply(msg, render_items(List.all))
   end
 
   @usage """
   create list <name> - Creates a new list with name
   """
   respond ~r/create list (.+)/i, msg do
-    all_lists = Lists.create(msg.matches[1])
+    all_lists = List.create(msg.matches[1])
     reply(msg, render_items(all_lists))
   end
 
@@ -35,7 +35,7 @@ defmodule Elix.Responders.Lists do
   delete list <name> - Deletes a list by name
   """
   respond ~r/delete list (.+)/i, msg do
-    all_lists = Lists.delete(msg.matches[1])
+    all_lists = List.delete(msg.matches[1])
 
     reply(msg, render_items(all_lists))
   end
@@ -45,7 +45,7 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/clear list (.+)/i, msg do
     list_name = msg.matches[1]
-    Lists.clear_items(list_name)
+    List.clear_items(list_name)
 
     reply(msg, render_list(list_name))
   end
@@ -56,7 +56,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/add (.+) to (.+)/i, msg do
     item_name = msg.matches[1]
     list_name = msg.matches[2]
-    Lists.add_item(list_name, item_name)
+    List.add_item(list_name, item_name)
 
     reply(msg, render_list(list_name))
   end
@@ -67,7 +67,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/delete (.+) from (.+)/i, msg do
     item_name = msg.matches[1]
     list_name = msg.matches[2]
-    Lists.delete_item(list_name, item_name)
+    List.delete_item(list_name, item_name)
 
     reply(msg, render_list(list_name))
   end
@@ -80,6 +80,6 @@ defmodule Elix.Responders.Lists do
   end
 
   defp render_list(list_name) when is_binary(list_name) do
-    "**#{list_name}**\n\n#{render_items(Lists.get_items(list_name))}"
+    "**#{list_name}**\n\n#{render_items(List.get_items(list_name))}"
   end
 end

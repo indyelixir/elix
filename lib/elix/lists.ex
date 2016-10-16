@@ -1,18 +1,18 @@
-defmodule Elix.Lists do
+defmodule Elix.List do
 
   @namespace "lists"
   @process :redix
 
   def all do
-    Redix.command!(@process, ["LRANGE", @namespace, 0, -1])
+    Redix.command!(@process, ["LRANGE", lists_key, 0, -1])
   end
 
   def create(list_name) do
-    Redix.command!(@process, ["RPUSH", @namespace, list_name])
+    Redix.command!(@process, ["RPUSH", lists_key, list_name])
   end
 
   def delete(list_name) do
-    Redix.command!(@process, ["LREM", @namespace, 0, list_name])
+    Redix.command!(@process, ["LREM", lists_key, 0, list_name])
     clear_items(list_name)
   end
 
@@ -32,8 +32,12 @@ defmodule Elix.Lists do
     Redix.command!(@process, ["DEL", list_key(list_name)])
   end
 
+  defp lists_key do
+    @namespace
+  end
+
   defp list_key(list_name) do
-    "#{@namespace}:#{hex_digest(list_name)}"
+    "#{lists_key}:#{hex_digest(list_name)}"
   end
 
   defp hex_digest(name) do
