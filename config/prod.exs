@@ -5,3 +5,5 @@ config :elix, Elix.Robot,
   token: System.get_env("FLOWDOCK_TOKEN")
 
 config :elix, :api_client, Elix.APIClient
+
+config :elix, :redis_client, Redix

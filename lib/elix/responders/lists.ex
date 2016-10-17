@@ -18,8 +18,8 @@ defmodule Elix.Responders.Lists do
   create list <name> - Creates a new list with name
   """
   respond ~r/create list (.+)/i, msg do
-    all_lists = List.create(msg.matches[1])
-    reply(msg, render_items(all_lists))
+    List.create(msg.matches[1])
+    reply(msg, render_items(List.all))
   end
 
   @usage """
@@ -35,9 +35,9 @@ defmodule Elix.Responders.Lists do
   delete list <name> - Deletes a list by name
   """
   respond ~r/delete list (.+)/i, msg do
-    all_lists = List.delete(msg.matches[1])
+    List.delete(msg.matches[1])
 
-    reply(msg, render_items(all_lists))
+    reply(msg, render_items(List.all))
   end
 
   @usage """
