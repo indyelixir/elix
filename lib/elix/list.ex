@@ -42,8 +42,13 @@ defmodule Elix.List do
   end
 
   defp hex_digest(name) do
-    :crypto.hash(:md5, name)
+    name
+    |> md5_hash
     |> Base.encode16
     |> String.downcase
+  end
+
+  defp md5_hash(hashable) do
+    :crypto.hash(:md5, hashable)
   end
 end
