@@ -1,7 +1,6 @@
 defmodule Elix.Responders.Lists do
   @moduledoc """
-  Commands to create, update, and delete
-  one-dimensional lists and their items.
+  Commands to create, update, and delete one-dimensional lists and their items.
   """
 
   use Hedwig.Responder
