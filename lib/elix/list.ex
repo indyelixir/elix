@@ -33,6 +33,17 @@ defmodule Elix.List do
     @redis_client.command!(@process, ["DEL", list_key(list_name)])
   end
 
+  def get_name(list_num) when is_integer(list_num) and list_num > 0 do
+    @redis_client.command!(@process, ["LINDEX", lists_key, list_num - 1])
+  end
+
+  def get_item_name(item_num, list_name) when is_binary(list_name)
+                                          and is_integer(item_num)
+                                          and item_num > 0 do
+
+    @redis_client.command!(@process, ["LINDEX", list_key(list_name), item_num - 1])
+  end
+
   defp lists_key do
     @namespace
   end

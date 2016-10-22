@@ -1,17 +1,29 @@
 defmodule RedixMock do
 
   @process :redix
+  @list_data %{
+    "Groceries" => [
+      "platypus milk"
+    ],
+    "PLIBMTLBHGATY" => [],
+    "Places to Visit" => [
+      "Indianapolis",
+      "The Moon",
+      "Space"
+    ]
+  }
 
   def command!(@process, ["LRANGE", "lists", 0, -1]) do
-    ["Groceries", "PLIBMTLBHGATY", "Places to Visit"]
+    Map.keys(@list_data)
   end
 
   def command!(@process, ["RPUSH", "lists", "Places to Visit"]) do
     1
   end
 
+  # "Places to Visit"
   def command!(@process, ["LRANGE", "lists:a4666375875a8cb9592e9a911a6a95c7", 0, -1]) do
-    ["Indianapolis", "The Moon", "Lake Chargoggagoggmanchauggagoggchaubunagungamaugg"]
+    @list_data["Places to Visit"]
   end
 
   def command!(@process, ["LREM", "lists", 0, "Places to Visit"]) do
@@ -30,19 +42,21 @@ defmodule RedixMock do
     []
   end
 
-  def command!(:redix, ["RPUSH", "lists:7c3765bf72361083d820071fb21308a9", "platypus milk"]) do
+  def command!(@process, ["RPUSH", "lists:7c3765bf72361083d820071fb21308a9", "platypus milk"]) do
     1
   end
 
-  def command!(:redix, ["LRANGE", "lists:7c3765bf72361083d820071fb21308a9", 0, -1]) do
-    ["platypus milk"]
+  def command!(@process, ["LRANGE", "lists:7c3765bf72361083d820071fb21308a9", 0, -1]) do
+    @list_data["Groceries"]
   end
 
-  def command!(:redix, ["LREM", "lists:c097f64a16edb8864b5383686a128735", 0, "get my Elixir book back from Miles"]) do
+  def command!(@process, ["LREM", "lists:a4666375875a8cb9592e9a911a6a95c7", 0, "The Moon"]) do
     1
   end
 
-  def command!(:redix, ["LRANGE", "lists:c097f64a16edb8864b5383686a128735", 0, -1]) do
-    ["Teach a robot to feel"]
+  def command!(@process, ["LINDEX", "lists", index]) do
+    @list_data
+    |> Map.keys
+    |> Enum.at(index)
   end
 end

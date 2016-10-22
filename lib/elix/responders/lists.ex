@@ -23,40 +23,76 @@ defmodule Elix.Responders.Lists do
   end
 
   @usage """
-  show list <name> - Displays the contents of a list by name
+  show list <list> - Displays the contents of a list by name or number
   """
-  respond ~r/show list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
+  respond ~r/show list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
+    list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
+      list_id |> String.to_integer |> List.get_name
+    else
+      list_id
+    end
+
     reply(msg, render_list(list_name))
   end
 
   @usage """
-  delete list <name> - Deletes a list by name
+  delete list <list> - Deletes a list by name or number
   """
-  respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
+  respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
+    list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
+      list_id |> String.to_integer |> List.get_name
+    else
+      list_id
+    end
+
     List.delete(list_name)
     reply(msg, render_items(List.all))
   end
 
   @usage """
-  clear list <name> - Deletes all items from a list by name
+  clear list <list> - Deletes all items from a list by name or number
   """
-  respond ~r/clear list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
+  respond ~r/clear list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
+    list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
+      list_id |> String.to_integer |> List.get_name
+    else
+      list_id
+    end
+
     List.clear_items(list_name)
     reply(msg, render_list(list_name))
   end
 
   @usage """
-  add <item> to <name> - Adds an item to a list by name
+  add <item> to <list> - Adds an item to a list by name or number
   """
-  respond ~r/add (.+) to (.+)/i, %Message{matches: %{1 => item_name, 2 => list_name}} = msg do
+  respond ~r/add (.+) to (.+)/i, %Message{matches: %{1 => item_name, 2 => list_id}} = msg do
+    list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
+      list_id |> String.to_integer |> List.get_name
+    else
+      list_id
+    end
+
     List.add_item(list_name, item_name)
     reply(msg, render_list(list_name))
   end
 
   @usage """
-  delete <item> from <name> - Deletes an item from a list by name
+  delete <item> from <name> - Deletes an item from a list by name or number
   """
-  respond ~r/delete (.+) from (.+)/i, %Message{matches: %{1 => item_name, 2 => list_name}} = msg do
+  respond ~r/delete (.+) from (.+)/i, %Message{matches: %{1 => item_id, 2 => list_id}} = msg do
+    list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
+      list_id |> String.to_integer |> List.get_name
+    else
+      list_id
+    end
+
+    item_name = if Regex.match?(~r/\A\d+\Z/, item_id) do
+      item_id |> String.to_integer |> List.get_item_name(list_name)
+    else
+      item_id
+    end
+
     List.delete_item(list_name, item_name)
     reply(msg, render_list(list_name))
   end
