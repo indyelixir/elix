@@ -1,4 +1,4 @@
-defmodule Elix.List do
+defmodule Elix.Lists do
 
   @namespace "lists"
   @redis_client Application.get_env(:elix, :redis_client)

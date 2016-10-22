@@ -5,21 +5,21 @@ defmodule Elix.Responders.Lists do
 
   use Hedwig.Responder
   alias Hedwig.Message
-  alias Elix.List
+  alias Elix.Lists
 
   @usage """
   show lists - Displays all lists
   """
   respond ~r/show lists\Z/i, msg do
-    reply(msg, render_items(List.all))
+    reply(msg, render_items(Lists.all))
   end
 
   @usage """
   create list <name> - Creates a new list with name
   """
   respond ~r/create list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
-    List.create(list_name)
-    reply(msg, render_items(List.all))
+    Lists.create(list_name)
+    reply(msg, render_items(Lists.all))
   end
 
   @usage """
@@ -27,7 +27,7 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/show list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
-      list_id |> String.to_integer |> List.get_name
+      list_id |> String.to_integer |> Lists.get_name
     else
       list_id
     end
@@ -40,13 +40,13 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
-      list_id |> String.to_integer |> List.get_name
+      list_id |> String.to_integer |> Lists.get_name
     else
       list_id
     end
 
-    List.delete(list_name)
-    reply(msg, render_items(List.all))
+    Lists.delete(list_name)
+    reply(msg, render_items(Lists.all))
   end
 
   @usage """
@@ -54,12 +54,12 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/clear list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
-      list_id |> String.to_integer |> List.get_name
+      list_id |> String.to_integer |> Lists.get_name
     else
       list_id
     end
 
-    List.clear_items(list_name)
+    Lists.clear_items(list_name)
     reply(msg, render_list(list_name))
   end
 
@@ -68,12 +68,12 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/add (.+) to (.+)/i, %Message{matches: %{1 => item_name, 2 => list_id}} = msg do
     list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
-      list_id |> String.to_integer |> List.get_name
+      list_id |> String.to_integer |> Lists.get_name
     else
       list_id
     end
 
-    List.add_item(list_name, item_name)
+    Lists.add_item(list_name, item_name)
     reply(msg, render_list(list_name))
   end
 
@@ -82,18 +82,18 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete (.+) from (.+)/i, %Message{matches: %{1 => item_id, 2 => list_id}} = msg do
     list_name = if Regex.match?(~r/\A\d+\Z/, list_id) do
-      list_id |> String.to_integer |> List.get_name
+      list_id |> String.to_integer |> Lists.get_name
     else
       list_id
     end
 
     item_name = if Regex.match?(~r/\A\d+\Z/, item_id) do
-      item_id |> String.to_integer |> List.get_item_name(list_name)
+      item_id |> String.to_integer |> Lists.get_item_name(list_name)
     else
       item_id
     end
 
-    List.delete_item(list_name, item_name)
+    Lists.delete_item(list_name, item_name)
     reply(msg, render_list(list_name))
   end
 
@@ -105,6 +105,6 @@ defmodule Elix.Responders.Lists do
   end
 
   defp render_list(list_name) when is_binary(list_name) do
-    "**#{list_name}**\n\n#{render_items(List.get_items(list_name))}"
+    "**#{list_name}**\n\n#{render_items(Lists.get_items(list_name))}"
   end
 end
