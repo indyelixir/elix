@@ -49,17 +49,10 @@ defmodule Elix.Lists do
   end
 
   defp list_key(list_name) do
-    "#{lists_key}:#{hex_digest(list_name)}"
+    "#{lists_key}:#{to_key(list_name)}"
   end
 
-  defp hex_digest(name) do
-    name
-    |> md5_hash
-    |> Base.encode16
-    |> String.downcase
-  end
-
-  defp md5_hash(hashable) do
-    :crypto.hash(:md5, hashable)
+  defp to_key(name) do
+    Regex.replace(~r/\W/, String.downcase(name), "-")
   end
 end
