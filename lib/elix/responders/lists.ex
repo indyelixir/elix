@@ -36,8 +36,8 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     list_name = parse_list_identifier(list_id)
-
     Lists.delete(list_name)
+
     reply(msg, render_items(Lists.all))
   end
 
@@ -73,25 +73,21 @@ defmodule Elix.Responders.Lists do
   end
 
   defp parse_list_identifier(list_id) do
-    if numeric_string?(list_id) do
+    try do
       list_id |> String.to_integer |> Lists.get_name
-    else
-      list_id
+    rescue
+      _error in ArgumentError -> list_id
     end
   end
 
   defp parse_item_identifier(item_id, list_name) do
-    if numeric_string?(item_id) do
+    try do
       item_id |> String.to_integer |> Lists.get_item_name(list_name)
-    else
-      item_id
+    rescue
+      _error in ArgumentError -> item_id
     end
   end
-
-  defp numeric_string?(string) do
-    Regex.match?(~r/\A\d+\Z/, string)
-  end
-
+  
   defp render_items(list) when is_list(list) do
     list
     |> Enum.with_index(1)
