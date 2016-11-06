@@ -31,7 +31,7 @@ defmodule Elix.Responders.ListsTest do
     end
 
     @tag start_robot: true, name: @bot_name, responders: [{Elix.Responders.Lists, []}]
-    test "'show list' displays contents of a list by name", %{adapter: adapter, msg: msg} do
+    test "'show list' displays contents of a list", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("show list Places to Visit")}}
 
       assert_receive {:message, %{text: text}}
