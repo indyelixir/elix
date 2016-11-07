@@ -62,10 +62,11 @@ defmodule Elix.Lists do
   end
 
   @doc """
-  Returns the name of a list, given its 1-based index in Lists.all.
+  Returns a status tuple with the name of a list,
+  given its 1-based index in Lists.all.
 
       iex> Elix.Lists.get_name(2)
-      "PLIBMTLBHGATY"
+      {:ok, "PLIBMTLBHGATY"}
 
   """
   def get_name(list_num) when is_integer(list_num) and list_num > 0 do
@@ -88,10 +89,11 @@ defmodule Elix.Lists do
   end
 
   @doc """
-  Returns the name of an item, given its 1-based index in the named list.
+  Returns a status tuple with the name of an item,
+  given its 1-based index in the named list.
 
       iex> Elix.Lists.get_item_name(1, "Places to Visit")
-      "Indianapolis"
+      {:ok, "Indianapolis"}
 
   """
   def get_item_name(item_num, list_name) when is_binary(list_name)
