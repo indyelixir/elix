@@ -27,10 +27,10 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/show list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
-      with list_name when is_binary(list_name) <- parse_list_identifier(list_id) do
+      with {:ok, list_name} <- parse_list_identifier(list_id) do
         render_list(list_name)
       else
-        :list_not_found -> "Sorry, I couldn’t find that list."
+        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
       end
 
     reply(msg, response)
@@ -41,11 +41,11 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
-      with list_name when is_binary(list_name) <- parse_list_identifier(list_id) do
+      with {:ok, list_name} <- parse_list_identifier(list_id) do
         Lists.delete(list_name)
         render_items(Lists.all)
       else
-        :list_not_found -> "Sorry, I couldn’t find that list."
+        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
       end
 
     reply(msg, response)
@@ -56,11 +56,11 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/clear list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
-      with list_name when is_binary(list_name) <- parse_list_identifier(list_id) do
+      with {:ok, list_name} <- parse_list_identifier(list_id) do
         Lists.clear_items(list_name)
         render_list(list_name)
       else
-        :list_not_found -> "Sorry, I couldn’t find that list."
+        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
       end
 
     reply(msg, response)
@@ -71,11 +71,11 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/add (.+) to (.+)/i, %Message{matches: %{1 => item_name, 2 => list_id}} = msg do
     response =
-      with list_name when is_binary(list_name) <- parse_list_identifier(list_id) do
+      with {:ok, list_name} <- parse_list_identifier(list_id) do
         Lists.add_item(list_name, item_name)
         render_list(list_name)
       else
-        :list_not_found -> "Sorry, I couldn’t find that list."
+        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
       end
 
     reply(msg, response)
@@ -86,14 +86,14 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete (.+) from (.+)/i, %Message{matches: %{1 => item_id, 2 => list_id}} = msg do
     response =
-      with list_name when is_binary(list_name) <- parse_list_identifier(list_id),
-           item_name when is_binary(item_name) <- parse_item_identifier(item_id, list_name) do
+      with {:ok, list_name} <- parse_list_identifier(list_id),
+           {:ok, item_name} <- parse_item_identifier(item_id, list_name) do
 
            Lists.delete_item(list_name, item_name)
            render_list(list_name)
       else
-        :list_not_found -> "Sorry, I couldn’t find that list."
-        :item_not_found -> "Sorry, I couldn’t find that item."
+        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
+        {:error, :item_not_found} -> "Sorry, I couldn’t find that item."
       end
 
     reply(msg, response)

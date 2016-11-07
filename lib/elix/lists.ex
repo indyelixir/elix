@@ -69,8 +69,10 @@ defmodule Elix.Lists do
 
   """
   def get_name(list_num) when is_integer(list_num) and list_num > 0 do
-    name = @redis_client.command!(@process, ["LINDEX", lists_key, list_num - 1])
-    name || :list_not_found
+    case @redis_client.command!(@process, ["LINDEX", lists_key, list_num - 1]) do
+      nil  -> {:error, :list_not_found}
+      name -> {:ok, name}
+    end
   end
 
   @doc """
@@ -79,9 +81,9 @@ defmodule Elix.Lists do
   """
   def get_by_name(list_name) do
     if list_name in all() do
-      list_name
+      {:ok, list_name}
     else
-      :list_not_found
+      {:error, :list_not_found}
     end
   end
 
@@ -96,8 +98,10 @@ defmodule Elix.Lists do
                                           and is_integer(item_num)
                                           and item_num > 0 do
 
-    name = @redis_client.command!(@process, ["LINDEX", list_key(list_name), item_num - 1])
-    name || :item_not_found
+    case @redis_client.command!(@process, ["LINDEX", list_key(list_name), item_num - 1]) do
+      nil  -> {:error, :item_not_found}
+      name -> {:ok, name}
+    end
   end
 
   @doc """
@@ -106,9 +110,9 @@ defmodule Elix.Lists do
   """
   def get_item_by_name(item_name, list_name) do
     if item_name in get_items(list_name) do
-      item_name
+      {:ok, item_name}
     else
-      :item_not_found
+      {:error, :item_not_found}
     end
   end
 
