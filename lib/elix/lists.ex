@@ -15,21 +15,21 @@ defmodule Elix.Lists do
 
   """
   def all do
-    @redis_client.command!(@process, ["LRANGE", lists_key, 0, -1])
+    command!(["LRANGE", lists_key, 0, -1])
   end
 
   @doc """
   Creates a new list by name, returning 1 if successful.
   """
   def create(list_name) do
-    @redis_client.command!(@process, ["RPUSH", lists_key, list_name])
+    command!(["RPUSH", lists_key, list_name])
   end
 
   @doc """
   Deletes a list by name as well as its items, returning 1 if successful.
   """
   def delete(list_name) do
-    @redis_client.command!(@process, ["LREM", lists_key, 0, list_name])
+    command!(["LREM", lists_key, 0, list_name])
     clear_items(list_name)
   end
 
@@ -37,28 +37,28 @@ defmodule Elix.Lists do
   Returns a list of all items in the named list.
   """
   def get_items(list_name) do
-    @redis_client.command!(@process, ["LRANGE", list_key(list_name), 0, -1])
+    command!(["LRANGE", list_key(list_name), 0, -1])
   end
 
   @doc """
   Adds an item to a list by name, returning 1 if successful.
   """
   def add_item(list_name, item_name) do
-    @redis_client.command!(@process, ["RPUSH", list_key(list_name), item_name])
+    command!(["RPUSH", list_key(list_name), item_name])
   end
 
   @doc """
   Deletes an item from a list by name, returning 1 if successful.
   """
   def delete_item(list_name, item_name) do
-    @redis_client.command!(@process, ["LREM", list_key(list_name), 0, item_name])
+    command!(["LREM", list_key(list_name), 0, item_name])
   end
 
   @doc """
   Removes all items from a list by name, returning 1 if successful.
   """
   def clear_items(list_name) do
-    @redis_client.command!(@process, ["DEL", list_key(list_name)])
+    command!(["DEL", list_key(list_name)])
   end
 
   @doc """
@@ -69,7 +69,7 @@ defmodule Elix.Lists do
 
   """
   def get_name(list_num) when is_integer(list_num) and list_num > 0 do
-    case @redis_client.command!(@process, ["LINDEX", lists_key, list_num - 1]) do
+    case command!(["LINDEX", lists_key, list_num - 1]) do
       nil  -> {:error, :list_not_found}
       name -> {:ok, name}
     end
@@ -98,7 +98,7 @@ defmodule Elix.Lists do
                                           and is_integer(item_num)
                                           and item_num > 0 do
 
-    case @redis_client.command!(@process, ["LINDEX", list_key(list_name), item_num - 1]) do
+    case command!(["LINDEX", list_key(list_name), item_num - 1]) do
       nil  -> {:error, :item_not_found}
       name -> {:ok, name}
     end
@@ -114,6 +114,10 @@ defmodule Elix.Lists do
     else
       {:error, :item_not_found}
     end
+  end
+
+  defp command!(instructions) do
+    @redis_client.command!(@process, instructions)
   end
 
   defp lists_key do
