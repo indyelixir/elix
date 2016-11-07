@@ -28,7 +28,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/show list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
       case parse_list_identifier(list_id) do
-        :not_found -> "Sorry, I couldn’t find that list."
+        :list_not_found -> "Sorry, I couldn’t find that list."
         list_name  -> render_list(list_name)
       end
 
@@ -41,7 +41,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
       case parse_list_identifier(list_id) do
-        :not_found ->
+        :list_not_found ->
             "Sorry, I couldn’t find that list."
         list_name  ->
           Lists.delete(list_name)
@@ -57,7 +57,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/clear list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
       case parse_list_identifier(list_id) do
-        :not_found ->
+        :list_not_found ->
             "Sorry, I couldn’t find that list."
         list_name  ->
           Lists.clear_items(list_name)
@@ -73,7 +73,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/add (.+) to (.+)/i, %Message{matches: %{1 => item_name, 2 => list_id}} = msg do
     response =
       case parse_list_identifier(list_id) do
-        :not_found ->
+        :list_not_found ->
             "Sorry, I couldn’t find that list."
         list_name  ->
           Lists.add_item(list_name, item_name)
@@ -89,11 +89,11 @@ defmodule Elix.Responders.Lists do
   respond ~r/delete (.+) from (.+)/i, %Message{matches: %{1 => item_id, 2 => list_id}} = msg do
     response =
       case parse_list_identifier(list_id) do
-        :not_found ->
+        :list_not_found ->
             "Sorry, I couldn’t find that list."
         list_name  ->
           case parse_item_identifier(item_id, list_name) do
-            :not_found ->
+            :item_not_found ->
               "Sorry, I couldn’t find that item."
             item_name ->
               Lists.delete_item(list_name, item_name)
