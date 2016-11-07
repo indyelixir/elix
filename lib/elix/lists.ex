@@ -27,8 +27,10 @@ defmodule Elix.Lists do
 
   @doc """
   Deletes a list by name as well as its items, returning 1 if successful.
+  Returns :not_found if there is no list by that name.
   """
   def delete(list_name) do
+
     @redis_client.command!(@process, ["LREM", lists_key, 0, list_name])
     clear_items(list_name)
   end
@@ -69,7 +71,20 @@ defmodule Elix.Lists do
 
   """
   def get_name(list_num) when is_integer(list_num) and list_num > 0 do
-    @redis_client.command!(@process, ["LINDEX", lists_key, list_num - 1])
+    name = @redis_client.command!(@process, ["LINDEX", lists_key, list_num - 1])
+    name || :not_found
+  end
+
+  @doc """
+  Returns the name of a list, given its name, or :not_found if not found.
+  I have to admit, this feels a little confused.
+  """
+  def get_by_name(list_name) do
+    if list_name in all() do
+      list_name
+    else
+      :not_found
+    end
   end
 
   @doc """
@@ -83,7 +98,20 @@ defmodule Elix.Lists do
                                           and is_integer(item_num)
                                           and item_num > 0 do
 
-    @redis_client.command!(@process, ["LINDEX", list_key(list_name), item_num - 1])
+    name = @redis_client.command!(@process, ["LINDEX", list_key(list_name), item_num - 1])
+    name || :not_found
+  end
+
+  @doc """
+  Returns the name of an item, given its list and name, or :not_found if not found.
+  I have to admit, this also feels a little confused.
+  """
+  def get_item_by_name(item_name, list_name) do
+    if item_name in get_items(list_name) do
+      item_name
+    else
+      :not_found
+    end
   end
 
   defp lists_key do
