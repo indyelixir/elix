@@ -1,7 +1,9 @@
-defmodule Elix.Lists do
+defmodule Elix.List do
   @moduledoc """
   An interface for manipulating lists of items in Redis.
   """
+
+  defstruct name: "Untitled List", items: []
 
   @namespace "lists"
   @redis_client Application.get_env(:elix, :redis_client)
@@ -10,69 +12,93 @@ defmodule Elix.Lists do
   @doc """
   Returns a list of all lists by name.
 
-      iex> Elix.Lists.all
+      iex> Elix.List.all_names
       ["Groceries", "PLIBMTLBHGATY", "Places to Visit"]
 
   """
-  def all do
+  def all_names do
     command!(["LRANGE", lists_key, 0, -1])
   end
 
   @doc """
-  Creates a new list by name, returning 1 if successful.
+  Creates a new list by name, returning it.
   """
   def create(list_name) do
-    command!(["RPUSH", lists_key, list_name])
+    1 = command!(["RPUSH", lists_key, list_name])
+
+    %__MODULE__{name: list_name, items: []}
   end
 
   @doc """
-  Deletes a list by name as well as its items, returning 1 if successful.
+  Deletes a list by name as well as its items, returning :ok if successful.
   """
-  def delete(list_name) do
+  def delete(%__MODULE__{name: list_name} = list) do
+    clear_items(list)
     command!(["LREM", lists_key, 0, list_name])
-    clear_items(list_name)
+    :ok
   end
 
   @doc """
   Returns a list of all items in the named list.
   """
+  def get_items(%__MODULE__{name: list_name}) do
+    command!(["LRANGE", list_key(list_name), 0, -1])
+  end
   def get_items(list_name) do
     command!(["LRANGE", list_key(list_name), 0, -1])
   end
 
   @doc """
-  Adds an item to a list by name, returning 1 if successful.
+  Adds an item to a list by name, returning the updated list.
   """
-  def add_item(list_name, item_name) do
+  def add_item(%__MODULE__{name: list_name} = list, item_name) do
     command!(["RPUSH", list_key(list_name), item_name])
+
+    %{list | items: list.items ++ [item_name]}
   end
 
   @doc """
-  Deletes an item from a list by name, returning 1 if successful.
+  Deletes an item from a list by name, returning the updated list.
   """
-  def delete_item(list_name, item_name) do
+  def delete_item(%__MODULE__{name: list_name} = list, item_name) do
     command!(["LREM", list_key(list_name), 0, item_name])
+
+    %{list | items: list.items -- [item_name]}
   end
 
   @doc """
-  Removes all items from a list by name, returning 1 if successful.
+  Removes all items from a list by name, returning the updated list.
   """
-  def clear_items(list_name) do
+  def clear_items(%__MODULE__{name: list_name} = list) do
     command!(["DEL", list_key(list_name)])
+
+    %{list | items: []}
   end
+
+  # @doc """
+  # TODO
+  # """
+  # def get(list_name) when is_binary(list_name) do
+  #   name = get_by_name(list_name)
+  #   %__MODULE__{name: name, items: get_items(name)}
+  # end
+  # def get(list_index) when is_integer(list_index) and list_index > 0 do
+  #   name = get_name(list_index)
+  #   %__MODULE__{name: name, items: get_items(name)}
+  # end
 
   @doc """
   Returns a status tuple with the name of a list,
-  given its 1-based index in Lists.all.
+  given its 1-based index in List.all_names.
 
-      iex> Elix.Lists.get_name(2)
-      {:ok, "PLIBMTLBHGATY"}
+      iex> Elix.List.get_by_number(2)
+      {:ok, %Elix.List{name: "PLIBMTLBHGATY", items: []}}
 
   """
-  def get_name(list_num) when is_integer(list_num) and list_num > 0 do
+  def get_by_number(list_num) when is_integer(list_num) and list_num > 0 do
     case command!(["LINDEX", lists_key, list_num - 1]) do
       nil  -> {:error, :list_not_found}
-      name -> {:ok, name}
+      name -> {:ok, %__MODULE__{name: name, items: get_items(name)}}
     end
   end
 
@@ -81,8 +107,8 @@ defmodule Elix.Lists do
   I have to admit, this feels a little confused.
   """
   def get_by_name(list_name) do
-    if list_name in all() do
-      {:ok, list_name}
+    if list_name in all_names() do
+      {:ok, %__MODULE__{name: list_name, items: get_items(list_name)}}
     else
       {:error, :list_not_found}
     end
@@ -92,7 +118,7 @@ defmodule Elix.Lists do
   Returns a status tuple with the name of an item,
   given its 1-based index in the named list.
 
-      iex> Elix.Lists.get_item_name(1, "Places to Visit")
+      iex> Elix.List.get_item_name(1, "Places to Visit")
       {:ok, "Indianapolis"}
 
   """

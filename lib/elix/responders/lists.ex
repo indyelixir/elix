@@ -5,33 +5,29 @@ defmodule Elix.Responders.Lists do
 
   use Hedwig.Responder
   alias Hedwig.Message
-  alias Elix.Lists
+  alias Elix.List
 
   @usage """
   show lists - Displays all lists
   """
   respond ~r/show lists\Z/i, msg do
-    reply(msg, render_items(Lists.all))
+    reply(msg, render_items(List.all_names))
   end
 
   @usage """
   create list <name> - Creates a new list with name
   """
   respond ~r/create list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
-    Lists.create(list_name)
-    reply(msg, render_items(Lists.all))
+    %List{name: list_name} = List.create(list_name)
+
+    reply(msg, render_items(List.all_names))
   end
 
   @usage """
   show list <list> - Displays the contents of a list by name or number
   """
   respond ~r/show list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
-    response =
-      with {:ok, list_name} <- parse_list_identifier(list_id) do
-        render_list(list_name)
-      else
-        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
-      end
+    response = with_list(list_id, &render_list(&1))
 
     reply(msg, response)
   end
@@ -41,12 +37,10 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
-      with {:ok, list_name} <- parse_list_identifier(list_id) do
-        Lists.delete(list_name)
-        render_items(Lists.all)
-      else
-        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
-      end
+      with_list(list_id, fn (list) ->
+        :ok = List.delete(list)
+        render_items(List.all_names)
+      end)
 
     reply(msg, response)
   end
@@ -56,12 +50,11 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/clear list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response =
-      with {:ok, list_name} <- parse_list_identifier(list_id) do
-        Lists.clear_items(list_name)
-        render_list(list_name)
-      else
-        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
-      end
+      with_list(list_id, fn (list) ->
+        list
+        |> List.clear_items
+        |> render_list
+      end)
 
     reply(msg, response)
   end
@@ -71,12 +64,11 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/add (.+) to (.+)/i, %Message{matches: %{1 => item_name, 2 => list_id}} = msg do
     response =
-      with {:ok, list_name} <- parse_list_identifier(list_id) do
-        Lists.add_item(list_name, item_name)
-        render_list(list_name)
-      else
-        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
-      end
+      with_list(list_id, fn (list) ->
+        list
+        |> List.add_item(item_name)
+        |> render_list()
+      end)
 
     reply(msg, response)
   end
@@ -86,32 +78,47 @@ defmodule Elix.Responders.Lists do
   """
   respond ~r/delete (.+) from (.+)/i, %Message{matches: %{1 => item_id, 2 => list_id}} = msg do
     response =
-      with {:ok, list_name} <- parse_list_identifier(list_id),
-           {:ok, item_name} <- parse_item_identifier(item_id, list_name) do
-
-           Lists.delete_item(list_name, item_name)
-           render_list(list_name)
-      else
-        {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
-        {:error, :item_not_found} -> "Sorry, I couldn’t find that item."
-      end
+      with_list_and_item(list_id, item_id, fn (list, item) ->
+        list
+        |> List.delete_item(item)
+        |> render_list()
+      end)
 
     reply(msg, response)
   end
 
+  defp with_list(list_identifier, function) do
+    with {:ok, list} <- parse_list_identifier(list_identifier) do
+      function.(list)
+    else
+      {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
+    end
+  end
+
+  defp with_list_and_item(list_identifier, item_identifier, function) do
+    with {:ok, list} <- parse_list_identifier(list_identifier),
+         {:ok, item} <- parse_item_identifier(item_identifier, list.name) do
+
+         function.(list, item)
+    else
+      {:error, :list_not_found} -> "Sorry, I couldn’t find that list."
+      {:error, :item_not_found} -> "Sorry, I couldn’t find that item."
+    end
+  end
+
   defp parse_list_identifier(list_id) do
     if numeric_string?(list_id) do
-      list_id |> String.to_integer |> Lists.get_name
+      list_id |> String.to_integer |> List.get_by_number
     else
-      list_id |> Lists.get_by_name
+      list_id |> List.get_by_name
     end
   end
 
   defp parse_item_identifier(item_id, list_name) do
     if numeric_string?(item_id) do
-      item_id |> String.to_integer |> Lists.get_item_name(list_name)
+      item_id |> String.to_integer |> List.get_item_name(list_name)
     else
-      item_id |> Lists.get_item_by_name(list_name)
+      item_id |> List.get_item_by_name(list_name)
     end
   end
 
@@ -119,14 +126,14 @@ defmodule Elix.Responders.Lists do
     Regex.match?(~r/\A\d+\Z/, string)
   end
 
-  defp render_items(list) when is_list(list) do
-    list
+  defp render_list(%List{name: name, items: items}) do
+    "**#{name}**\n\n#{render_items(items)}"
+  end
+  
+  defp render_items(items) when is_list(items) do
+    items
     |> Enum.with_index(1)
     |> Enum.map(fn({item, index}) -> "#{index}. #{item}\n" end)
     |> Enum.join
-  end
-
-  defp render_list(list_name) when is_binary(list_name) do
-    "**#{list_name}**\n\n#{render_items(Lists.get_items(list_name))}"
   end
 end

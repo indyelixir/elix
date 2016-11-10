@@ -78,8 +78,8 @@ defmodule Elix.Responders.ListsTest do
     test "'delete list' deletes a list by name", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("delete list Places to Visit")}}
 
-      # Because we render the list from fixture data, it includes
-      # “Places to Visit” even though we’re testing its deletion
+      # Because we render the list from fixture data in tests, it still
+      # includes “Places to Visit” even though we’re testing its deletion
       assert_receive {:message, %{text: text}}
       assert text == to_user """
       1. Groceries
@@ -158,25 +158,27 @@ defmodule Elix.Responders.ListsTest do
 
     @tag start_robot: true, name: @bot_name, responders: [{Elix.Responders.Lists, []}]
     test "'add item to list' adds an item to a list by name", %{adapter: adapter, msg: msg} do
-      send adapter, {:message, %{msg | text: to_bot("add platypus milk to Groceries")}}
+      send adapter, {:message, %{msg | text: to_bot("add jazzberries to Groceries")}}
 
       assert_receive {:message, %{text: text}}
       assert text == to_user """
       **Groceries**
 
       1. platypus milk
+      2. jazzberries
       """
     end
 
     @tag start_robot: true, name: @bot_name, responders: [{Elix.Responders.Lists, []}]
     test "'add item to list' adds an item to a list by number", %{adapter: adapter, msg: msg} do
-      send adapter, {:message, %{msg | text: to_bot("add platypus milk to 1")}}
+      send adapter, {:message, %{msg | text: to_bot("add jazzberries to 1")}}
 
       assert_receive {:message, %{text: text}}
       assert text == to_user """
       **Groceries**
 
       1. platypus milk
+      2. jazzberries
       """
     end
 
@@ -200,15 +202,12 @@ defmodule Elix.Responders.ListsTest do
     test "'delete item from list' removes an item from a list by name", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("delete The Moon from Places to Visit")}}
 
-      # Because we render the list from fixture data, it includes
-      # “The Moon” even though we’re testing its deletion
       assert_receive {:message, %{text: text}}
       assert text == to_user """
       **Places to Visit**
 
       1. Indianapolis
-      2. The Moon
-      3. Space
+      2. Space
       """
     end
 
@@ -216,15 +215,12 @@ defmodule Elix.Responders.ListsTest do
     test "'delete item from list' removes an item from a list by number", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("delete 2 from 3")}}
 
-      # Because we render the list from fixture data, it includes
-      # “The Moon” even though we’re testing its deletion
       assert_receive {:message, %{text: text}}
       assert text == to_user """
       **Places to Visit**
 
       1. Indianapolis
-      2. The Moon
-      3. Space
+      2. Space
       """
     end
 

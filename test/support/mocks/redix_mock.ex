@@ -45,6 +45,10 @@ defmodule RedixMock do
     1
   end
 
+  def command!(@process, ["RPUSH", "lists:groceries", "jazzberries"]) do
+    1
+  end
+
   def command!(@process, ["LRANGE", "lists:groceries", 0, -1]) do
     @list_data["Groceries"]
   end
