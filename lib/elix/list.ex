@@ -39,16 +39,6 @@ defmodule Elix.List do
   end
 
   @doc """
-  Returns a list of all items in the named list.
-  """
-  def get_items(%__MODULE__{name: list_name}) do
-    command!(["LRANGE", list_key(list_name), 0, -1])
-  end
-  def get_items(list_name) do
-    command!(["LRANGE", list_key(list_name), 0, -1])
-  end
-
-  @doc """
   Adds an item to a list by name, returning the updated list.
   """
   def add_item(%__MODULE__{name: list_name} = list, item_name) do
@@ -142,6 +132,13 @@ defmodule Elix.List do
     else
       {:error, :item_not_found}
     end
+  end
+
+  defp get_items(%__MODULE__{name: list_name}) do
+    get_items(list_name)
+  end
+  defp get_items(list_name) do
+    command!(["LRANGE", list_key(list_name), 0, -1])
   end
 
   defp command!(instructions) do
