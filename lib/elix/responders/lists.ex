@@ -107,29 +107,25 @@ defmodule Elix.Responders.Lists do
   end
 
   defp parse_list_identifier(list_id) do
-    if numeric_string?(list_id) do
+    try do
       list_id |> String.to_integer |> List.get_by_number
-    else
-      list_id |> List.get_by_name
+    rescue
+      _e in ArgumentError -> list_id |> List.get_by_name
     end
   end
 
   defp parse_item_identifier(item_id, list_name) do
-    if numeric_string?(item_id) do
+    try do
       item_id |> String.to_integer |> List.get_item_name(list_name)
-    else
-      item_id |> List.get_item_by_name(list_name)
+    rescue
+      _e in ArgumentError -> item_id |> List.get_item_by_name(list_name)
     end
-  end
-
-  defp numeric_string?(string) do
-    Regex.match?(~r/\A\d+\Z/, string)
   end
 
   defp render_list(%List{name: name, items: items}) do
     "**#{name}**\n\n#{render_items(items)}"
   end
-  
+
   defp render_items(items) when is_list(items) do
     items
     |> Enum.with_index(1)
