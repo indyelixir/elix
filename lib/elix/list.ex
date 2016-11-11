@@ -24,7 +24,7 @@ defmodule Elix.List do
   Creates a new list by name, returning it.
   """
   def create(list_name) do
-    1 = command!(["RPUSH", lists_key, list_name])
+    command!(["RPUSH", lists_key, list_name])
 
     %__MODULE__{name: list_name, items: []}
   end

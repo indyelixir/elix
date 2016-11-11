@@ -18,7 +18,7 @@ defmodule RedixMock do
   end
 
   def command!(@process, ["RPUSH", "lists", "Places to Visit"]) do
-    1
+    3
   end
 
   def command!(@process, ["LRANGE", "lists:places-to-visit", 0, -1]) do
