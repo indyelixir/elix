@@ -22,18 +22,8 @@ config :elix, Elix.Robot,
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
-# You can configure for your application as:
-#
-#     config :elix, key: :value
-#
-# And access this configuration in your application as:
-#
-#     Application.get_env(:elix, :key)
-#
-# Or configure a 3rd-party app:
-#
-#     config :logger, level: :info
-#
+config :elix, :api_client, Elix.APIClient
+config :elix, :redis_client, Redix
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
