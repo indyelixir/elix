@@ -65,24 +65,15 @@ defmodule Elix.List do
     %{list | items: []}
   end
 
-  # @doc """
-  # TODO
-  # """
-  # def get(list_name) when is_binary(list_name) do
-  #   name = get_by_name(list_name)
-  #   %__MODULE__{name: name, items: get_items(name)}
-  # end
-  # def get(list_index) when is_integer(list_index) and list_index > 0 do
-  #   name = get_name(list_index)
-  #   %__MODULE__{name: name, items: get_items(name)}
-  # end
-
   @doc """
-  Returns a status tuple with the name of a list,
-  given its 1-based index in List.all_names.
+  Returns a status tuple with a list, given its 1-based index in List.all_names.
+  Returns {:error, :list_not_found} if there is nothing at that index.
 
       iex> Elix.List.get_by_number(2)
       {:ok, %Elix.List{name: "PLIBMTLBHGATY", items: []}}
+
+      iex> Elix.List.get_by_number(99)
+      {:error, :list_not_found}
 
   """
   def get_by_number(list_num) when is_integer(list_num) and list_num > 0 do
@@ -93,8 +84,15 @@ defmodule Elix.List do
   end
 
   @doc """
-  Returns the name of a list, given its name, or :list_not_found if not found.
-  I have to admit, this feels a little confused.
+  Returns a status tuple with a list, given its name.
+  Returns {:error, :list_not_found} if there is no list with that name.
+
+      iex> Elix.List.get_by_name("PLIBMTLBHGATY")
+      {:ok, %Elix.List{name: "PLIBMTLBHGATY", items: []}}
+
+      iex> Elix.List.get_by_name("Not A List")
+      {:error, :list_not_found}
+
   """
   def get_by_name(list_name) do
     if list_name in all_names() do
@@ -105,11 +103,15 @@ defmodule Elix.List do
   end
 
   @doc """
-  Returns a status tuple with the name of an item,
-  given its 1-based index in the named list.
+  Returns a status tuple with the name of an item, given its 1-based index
+  in the named list.
+  Returns {:error, :item_not_found} if there is no item at that index.
 
       iex> Elix.List.get_item_name(1, "Places to Visit")
       {:ok, "Indianapolis"}
+
+      iex> Elix.List.get_item_name(99, "Places to Visit")
+      {:error, :item_not_found}
 
   """
   def get_item_name(item_num, list_name) when is_binary(list_name)
@@ -123,8 +125,16 @@ defmodule Elix.List do
   end
 
   @doc """
-  Returns the name of an item, given its list and name, or :item_not_found if not found.
-  I have to admit, this also feels a little confused.
+  Returns a status tuple with the name of an item, given its 1-based index
+  in the named list.
+  Returns {:error, :item_not_found} if there is no item with that name.
+
+      iex> Elix.List.get_item_by_name("Indianapolis", "Places to Visit")
+      {:ok, "Indianapolis"}
+
+      iex> Elix.List.get_item_by_name("Nowhere", "Places to Visit")
+      {:error, :item_not_found}
+
   """
   def get_item_by_name(item_name, list_name) do
     if item_name in get_items(list_name) do
