@@ -18,7 +18,7 @@ defmodule Elix.Responders.Lists do
   create list <name> - Creates a new list with name
   """
   respond ~r/create list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
-    %List{name: list_name} = List.create(list_name)
+    %List{} = List.create(list_name)
 
     reply(msg, render_items(List.all_names))
   end
