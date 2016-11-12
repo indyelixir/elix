@@ -9,7 +9,9 @@ defmodule Elix.Responders.RemindMe do
   @usage """
   remind me to <thing> in <time> - Sets a reminder
   """
-  respond ~r/remind me to (.+) in (.+)/i, %Message{matches: %{1 => subject, 2 => raw_time}} = msg do
-    reply(msg, "Okay, I’ll remind you to #{subject} in #{raw_time}")
+  hear ~r/remind me to (.+) in (.+)/i, %Hedwig.Message{matches: %{1 => subject, 2 => time_string}, robot: robot_pid} = msg do
+    Elix.Reminder.enqueue(subject)
+
+    reply(msg, "Okay, I’ll remind you to #{subject} in #{time_string}.")
   end
 end
