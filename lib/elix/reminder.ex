@@ -5,7 +5,7 @@ defmodule Elix.Reminder do
   use GenServer
 
   def start_link do
-    GenServer.start_link(__MODULE__, [])
+    GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end
 
   def init(state) do
@@ -13,17 +13,17 @@ defmodule Elix.Reminder do
     {:ok, state}
   end
 
-  # Elix.Reminder.enqueue(server, "Do the thing")
-  def enqueue(pid, message) do
-    GenServer.cast(pid, {:enqueue, message})
+  # Elix.Reminder.enqueue("Do the thing")
+  def enqueue(message) do
+    GenServer.cast(__MODULE__, {:enqueue, message})
   end
 
   def handle_cast({:enqueue, message}, state) do
     {:noreply, [message | state]}
   end
 
-  def get_state(pid) do
-    GenServer.call(pid, :get_state)
+  def get_state do
+    GenServer.call(__MODULE__, :get_state)
   end
 
   def handle_call(:get_state, _from, state) do
