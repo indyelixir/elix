@@ -13,13 +13,12 @@ defmodule Elix.Reminder do
     {:ok, state}
   end
 
-  # Elix.Reminder.enqueue("Do the thing")
-  def enqueue(message) do
-    GenServer.cast(__MODULE__, {:enqueue, message})
+  def enqueue(subject, remind_at_timestamp, msg) do
+    GenServer.cast(__MODULE__, {:enqueue, {subject, remind_at_timestamp, msg}})
   end
 
-  def handle_cast({:enqueue, message}, state) do
-    {:noreply, [message | state]}
+  def handle_cast({:enqueue, reminder}, state) do
+    {:noreply, [reminder | state]}
   end
 
   def get_state do
@@ -31,9 +30,20 @@ defmodule Elix.Reminder do
   end
 
   def handle_info(:heartbeat, state) do
-    IO.inspect(state)
+    new_state =
+      state
+      |> Enum.map(fn ({message, timestamp, msg} = reminder) ->
+           if timestamp < :os.system_time(:seconds) do
+             GenServer.cast(msg.robot, {:reply, %{msg | text: message}})
+             nil
+           else
+             reminder
+           end
+         end)
+      |> Enum.reject(&is_nil/1)
+
     heartbeat() # Keep beating
-    {:noreply, state}
+    {:noreply, new_state}
   end
 
   defp heartbeat() do
