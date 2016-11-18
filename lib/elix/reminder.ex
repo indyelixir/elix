@@ -32,9 +32,9 @@ defmodule Elix.Reminder do
   def handle_info(:heartbeat, state) do
     new_state =
       state
-      |> Enum.map(fn ({message, timestamp, msg} = reminder) ->
+      |> Enum.map(fn ({subject, timestamp, msg} = reminder) ->
            if timestamp < :os.system_time(:seconds) do
-             GenServer.cast(msg.robot, {:reply, %{msg | text: message}})
+             GenServer.cast(Elix.Robot, {:reply, %{msg | text: subject}})
              nil
            else
              reminder
@@ -47,6 +47,6 @@ defmodule Elix.Reminder do
   end
 
   defp heartbeat() do
-    Process.send_after(self(), :heartbeat, 1_000)
+    Process.send_after(self(), :heartbeat, :timer.seconds(1))
   end
 end
