@@ -1,4 +1,4 @@
-defmodule Elix.Reminder do
+defmodule Elix.ScheduledMessage do
   @moduledoc """
   What it does.
   """
@@ -13,8 +13,8 @@ defmodule Elix.Reminder do
     {:ok, state}
   end
 
-  def enqueue(subject, remind_at_timestamp, user_name) do
-    GenServer.cast(__MODULE__, {:enqueue, {subject, remind_at_timestamp, user_name}})
+  def enqueue(subject, remind_at_timestamp, msg) do
+    GenServer.cast(__MODULE__, {:enqueue, {subject, remind_at_timestamp, msg}})
   end
 
   def handle_cast({:enqueue, reminder}, state) do
@@ -32,13 +32,9 @@ defmodule Elix.Reminder do
   def handle_info(:heartbeat, state) do
     new_state =
       state
-      |> Enum.map(fn ({subject, timestamp, user_name} = reminder) ->
-           if timestamp <= :os.system_time(:seconds) do
-             GenServer.cast(Elix.Robot, {:reply, %Hedwig.Message{
-               type: "chat",
-               text: subject,
-               user: user_name
-             }})
+      |> Enum.map(fn ({subject, timestamp, msg} = reminder) ->
+           if timestamp < :os.system_time(:seconds) do
+             GenServer.cast(Elix.Robot, {:reply, %{msg | text: subject}})
              nil
            else
              reminder
