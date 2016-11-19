@@ -1,6 +1,6 @@
 defmodule Elix.ScheduledMessage do
   @moduledoc """
-  What it does.
+  Enables scheduling and sending chat messages in the future.
   """
   use GenServer
 
@@ -13,28 +13,20 @@ defmodule Elix.ScheduledMessage do
     {:ok, state}
   end
 
-  def enqueue(subject, remind_at_timestamp, msg) do
-    GenServer.cast(__MODULE__, {:enqueue, {subject, remind_at_timestamp, msg}})
+  def enqueue(message, timestamp) do
+    GenServer.cast(__MODULE__, {:enqueue, {message, timestamp}})
   end
 
-  def handle_cast({:enqueue, reminder}, state) do
-    {:noreply, [reminder | state]}
-  end
-
-  def get_state do
-    GenServer.call(__MODULE__, :get_state)
-  end
-
-  def handle_call(:get_state, _from, state) do
-    {:reply, state, state}
+  def handle_cast({:enqueue, scheduled_message}, state) do
+    {:noreply, [scheduled_message | state]}
   end
 
   def handle_info(:heartbeat, state) do
     new_state =
       state
-      |> Enum.map(fn ({subject, timestamp, msg} = reminder) ->
-           if timestamp < :os.system_time(:seconds) do
-             GenServer.cast(Elix.Robot, {:reply, %{msg | text: subject}})
+      |> Stream.map(fn ({message, timestamp} = reminder) ->
+           if timestamp <= :os.system_time(:seconds) do
+             GenServer.cast(Elix.Robot, message)
              nil
            else
              reminder
