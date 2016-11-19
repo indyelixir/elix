@@ -4,56 +4,72 @@ defmodule Elix.TimeParserTest do
   describe "Elix.TimeParser.from_now" do
 
     test "parses seconds" do
-      assert Elix.TimeParser.from_now("1 second") == 1
-      assert Elix.TimeParser.from_now("10 seconds") == 10
-      assert Elix.TimeParser.from_now("11s") == 11
-      assert Elix.TimeParser.from_now("15 s") == 15
+      assert Elix.TimeParser.from_now("1 second") == {:ok, 1}
+      assert Elix.TimeParser.from_now("10 seconds") == {:ok, 10}
+      assert Elix.TimeParser.from_now("11s") == {:ok, 11}
+      assert Elix.TimeParser.from_now("15 s") == {:ok, 15}
     end
 
     test "parses minutes" do
-      assert Elix.TimeParser.from_now("1 minute") == 1 * 60
-      assert Elix.TimeParser.from_now("3 minutes") == 3 * 60
-      assert Elix.TimeParser.from_now("5 min") == 5 * 60
-      assert Elix.TimeParser.from_now("6min") == 6 * 60
-      assert Elix.TimeParser.from_now("7 mins") == 7 * 60
-      assert Elix.TimeParser.from_now("8mins") == 8 * 60
-      assert Elix.TimeParser.from_now("12m") == 12 * 60
-      assert Elix.TimeParser.from_now("14 m") == 14 * 60
+      assert Elix.TimeParser.from_now("1 minute") == {:ok, minutes(1)}
+      assert Elix.TimeParser.from_now("3 minutes") == {:ok, minutes(3)}
+      assert Elix.TimeParser.from_now("5 min") == {:ok, minutes(5)}
+      assert Elix.TimeParser.from_now("6min") == {:ok, minutes(6)}
+      assert Elix.TimeParser.from_now("7 mins") == {:ok, minutes(7)}
+      assert Elix.TimeParser.from_now("8mins") == {:ok, minutes(8)}
+      assert Elix.TimeParser.from_now("12m") == {:ok, minutes(12)}
+      assert Elix.TimeParser.from_now("14 m") == {:ok, minutes(14)}
     end
 
     test "parses hours" do
-      assert Elix.TimeParser.from_now("1 hour") == 1 * 60 * 60
-      assert Elix.TimeParser.from_now("3 hours") == 3 * 60 * 60
-      assert Elix.TimeParser.from_now("5 hr") == 5 * 60 * 60
-      assert Elix.TimeParser.from_now("6hr") == 6 * 60 * 60
-      assert Elix.TimeParser.from_now("7 hrs") == 7 * 60 * 60
-      assert Elix.TimeParser.from_now("8hrs") == 8 * 60 * 60
-      assert Elix.TimeParser.from_now("12h") == 12 * 60 * 60
-      assert Elix.TimeParser.from_now("14 h") == 14 * 60 * 60
+      assert Elix.TimeParser.from_now("1 hour") == {:ok, hours(1)}
+      assert Elix.TimeParser.from_now("3 hours") == {:ok, hours(3)}
+      assert Elix.TimeParser.from_now("5 hr") == {:ok, hours(5)}
+      assert Elix.TimeParser.from_now("6hr") == {:ok, hours(6)}
+      assert Elix.TimeParser.from_now("7 hrs") == {:ok, hours(7)}
+      assert Elix.TimeParser.from_now("8hrs") == {:ok, hours(8)}
+      assert Elix.TimeParser.from_now("12h") == {:ok, hours(12)}
+      assert Elix.TimeParser.from_now("14 h") == {:ok, hours(14)}
     end
 
     test "parses days" do
-      assert Elix.TimeParser.from_now("1 day") == 1 * 60 * 60 * 24
-      assert Elix.TimeParser.from_now("3 days") == 3 * 60 * 60 * 24
-      assert Elix.TimeParser.from_now("4day") == 4 * 60 * 60 * 24
-      assert Elix.TimeParser.from_now("5days") == 5 * 60 * 60 * 24
-      assert Elix.TimeParser.from_now("12d") == 12 * 60 * 60 * 24
-      assert Elix.TimeParser.from_now("14 d") == 14 * 60 * 60 * 24
+      assert Elix.TimeParser.from_now("1 day") == {:ok, days(1)}
+      assert Elix.TimeParser.from_now("3 days") == {:ok, days(3)}
+      assert Elix.TimeParser.from_now("4day") == {:ok, days(4)}
+      assert Elix.TimeParser.from_now("5days") == {:ok, days(5)}
+      assert Elix.TimeParser.from_now("12d") == {:ok, days(12)}
+      assert Elix.TimeParser.from_now("14 d") == {:ok, days(14)}
     end
 
     test "parses weeks" do
-      assert Elix.TimeParser.from_now("1 week") == 1 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("3 weeks") == 3 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("4wk") == 4 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("5 wk") == 5 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("6wks") == 6 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("7 wks") == 7 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("12w") == 12 * 60 * 60 * 24 * 7
-      assert Elix.TimeParser.from_now("14 w") == 14 * 60 * 60 * 24 * 7
+      assert Elix.TimeParser.from_now("1 week") == {:ok, weeks(1)}
+      assert Elix.TimeParser.from_now("3 weeks") == {:ok, weeks(3)}
+      assert Elix.TimeParser.from_now("4wk") == {:ok, weeks(4)}
+      assert Elix.TimeParser.from_now("5 wk") == {:ok, weeks(5)}
+      assert Elix.TimeParser.from_now("6wks") == {:ok, weeks(6)}
+      assert Elix.TimeParser.from_now("7 wks") == {:ok, weeks(7)}
+      assert Elix.TimeParser.from_now("12w") == {:ok, weeks(12)}
+      assert Elix.TimeParser.from_now("14 w") == {:ok, weeks(14)}
     end
 
     test "returns :error for unparsable times" do
-      assert Elix.TimeParser.from_now("Forever") == :error
+      assert Elix.TimeParser.from_now("Forever") == {:error, :parse_error}
     end
+  end
+
+  defp minutes(count) do
+    count * 60
+  end
+
+  defp hours(count) do
+    minutes(count) * 60
+  end
+
+  defp days(count) do
+    hours(count) * 24
+  end
+
+  defp weeks(count) do
+    days(count) * 7
   end
 end

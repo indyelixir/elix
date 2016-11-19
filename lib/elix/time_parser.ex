@@ -10,23 +10,23 @@ defmodule Elix.TimeParser do
     time_string
     |> String.replace(" ", "")
     |> Integer.parse
-    |> to_seconds()
+    |> to_seconds
   end
 
   defp to_seconds({seconds, name}) when name in @second_names do
-    seconds
+    {:ok, seconds}
   end
   defp to_seconds({minutes, name}) when name in @minute_names do
-    minutes * 60
+    {:ok, minutes * 60}
   end
   defp to_seconds({hours, name}) when name in @hour_names do
-    hours * 60 * 60
+    {:ok, hours * 60 * 60}
   end
   defp to_seconds({days, name}) when name in @day_names do
-    days * 60 * 60 * 24
+    {:ok, days * 60 * 60 * 24}
   end
   defp to_seconds({weeks, name}) when name in @week_names do
-    weeks * 60 * 60 * 24 * 7
+    {:ok, weeks * 60 * 60 * 24 * 7}
   end
-  defp to_seconds(_), do: :error
+  defp to_seconds(_), do: {:error, :parse_error}
 end
