@@ -34,7 +34,7 @@ defmodule Elix.Responders.RemindMe do
     user
     |> build_reminder_about(subject)
     |> to_reply_tuple
-    |> Elix.ScheduledMessage.send_at(timestamp)
+    |> Elix.MessageScheduler.send_at(timestamp)
   end
 
   defp to_reply_tuple(message), do: {:reply, message}

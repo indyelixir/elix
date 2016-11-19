@@ -1,4 +1,4 @@
-defmodule Elix.ScheduledMessage do
+defmodule Elix.MessageScheduler do
   @moduledoc """
   Enables scheduling and sending chat messages in the future.
   """
@@ -13,11 +13,19 @@ defmodule Elix.ScheduledMessage do
     {:ok, state}
   end
 
+  @doc """
+  Schedule a message to be sent to Elix.Robot at some future timestamp.
+
+      iex> timestamp = :os.system_time(:seconds) + 10
+      ...> Elix.MessageScheduler.send_at(timestamp, {:ping, "Steve"})
+      :ok
+
+  """
   def send_at(message, timestamp) do
-    GenServer.cast(__MODULE__, {:enqueue, {message, timestamp}})
+    GenServer.cast(__MODULE__, {:schedule, {message, timestamp}})
   end
 
-  def handle_cast({:enqueue, scheduled_message}, state) do
+  def handle_cast({:schedule, scheduled_message}, state) do
     {:noreply, [scheduled_message | state]}
   end
 

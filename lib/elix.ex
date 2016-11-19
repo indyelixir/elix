@@ -14,7 +14,7 @@ defmodule Elix do
       # worker(Elix.Worker, [arg1, arg2, arg3]),
       worker(Elix.Robot, []),
       worker(Redix, [redis_url, [name: :redix]]),
-      worker(Elix.ScheduledMessage, []),
+      worker(Elix.MessageScheduler, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
