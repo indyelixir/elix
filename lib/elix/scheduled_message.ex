@@ -13,7 +13,7 @@ defmodule Elix.ScheduledMessage do
     {:ok, state}
   end
 
-  def enqueue(message, timestamp) do
+  def send_at(message, timestamp) do
     GenServer.cast(__MODULE__, {:enqueue, {message, timestamp}})
   end
 
@@ -24,12 +24,12 @@ defmodule Elix.ScheduledMessage do
   def handle_info(:heartbeat, state) do
     new_state =
       state
-      |> Stream.map(fn ({message, timestamp} = reminder) ->
+      |> Stream.map(fn ({message, timestamp} = scheduled_message) ->
            if timestamp <= :os.system_time(:seconds) do
              GenServer.cast(Elix.Robot, message)
              nil
            else
-             reminder
+             scheduled_message
            end
          end)
       |> Enum.reject(&is_nil/1)
@@ -38,7 +38,7 @@ defmodule Elix.ScheduledMessage do
     {:noreply, new_state}
   end
 
-  defp heartbeat() do
+  defp heartbeat do
     Process.send_after(self(), :heartbeat, :timer.seconds(1))
   end
 end
