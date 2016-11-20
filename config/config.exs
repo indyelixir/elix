@@ -25,6 +25,7 @@ config :elix, Elix.Robot,
 
 config :elix, :api_client, Elix.APIClient
 config :elix, :redis_client, Redix
+config :elix, :message_scheduler_store, Elix.MessageScheduler.RedisStore
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment

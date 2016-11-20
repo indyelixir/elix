@@ -4,7 +4,7 @@ defmodule Elix.MessageScheduler do
   """
   use GenServer
 
-  @store Elix.MessageScheduler.RedisStore
+  @store Application.get_env(:elix, :message_scheduler_store)
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
