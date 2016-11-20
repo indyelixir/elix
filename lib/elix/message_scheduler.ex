@@ -4,7 +4,7 @@ defmodule Elix.MessageScheduler do
   """
   use GenServer
 
-  @namespace "scheduled_messages"
+  @store Elix.MessageScheduler.RedisStore
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
@@ -28,20 +28,12 @@ defmodule Elix.MessageScheduler do
   end
 
   def handle_cast(:init, _state) do
-    state_from_store =
-      Redix.command!(:redix, ["ZRANGE", @namespace, 0, -1, "WITHSCORES"])
-      |> Stream.chunk(2)
-      |> Enum.map(fn([binary_message, timestamp_string]) ->
-           {:erlang.binary_to_term(binary_message), String.to_integer(timestamp_string)}
-         end)
-
     heartbeat()
-    {:noreply, state_from_store}
+    {:noreply, @store.all}
   end
 
   def handle_cast({:schedule, {message, timestamp} = scheduled_message}, state) do
-    message_bin = :erlang.term_to_binary(message)
-    Redix.command!(:redix, ["ZADD", @namespace, timestamp, message_bin])
+    @store.add(message, timestamp)
 
     {:noreply, [scheduled_message | state]}
   end
@@ -57,8 +49,7 @@ defmodule Elix.MessageScheduler do
       |> Stream.map(fn ({message, timestamp} = scheduled_message) ->
            if timestamp <= :os.system_time(:seconds) do
              GenServer.cast(Elix.Robot, message)
-             message_bin = :erlang.term_to_binary(message)
-             Redix.command!(:redix, ["ZREM", @namespace, message_bin])
+             @store.remove(message)
              nil
            else
              scheduled_message
