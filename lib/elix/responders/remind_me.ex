@@ -7,16 +7,16 @@ defmodule Elix.Responders.RemindMe do
   alias Hedwig.Message
 
   @usage """
-  remind me to <thing> in <time> - Sets a reminder
+  remind me <thing> in <time> - Sets a reminder
   """
   hear ~r/remind me (.+) in (.+)/i,
-    %Message{matches: %{1 => subject, 2 => time_string}, user: user} = msg do
+    %Message{matches: %{1 => subject, 2 => time_string}} = msg do
 
     response =
       with {:ok, seconds} <- Elix.TimeParser.from_now(time_string) do
-        seconds
-        |> from_now
-        |> schedule_reminder(user, subject)
+        msg
+        |> build_reply_about(subject)
+        |> schedule_in(seconds)
 
         "Okay, I’ll remind you #{subject} in #{time_string}."
       else
@@ -26,24 +26,13 @@ defmodule Elix.Responders.RemindMe do
     reply(msg, response)
   end
 
-  defp from_now(seconds) do
-    :os.system_time(:seconds) + seconds
+  defp build_reply_about(msg, subject) do
+    %Message{msg | text: "You asked me to remind you #{subject}."}
   end
 
-  defp schedule_reminder(timestamp, user, subject) do
-    user
-    |> build_reminder_about(subject)
-    |> to_reply_tuple
-    |> Elix.MessageScheduler.send_at(timestamp)
-  end
+  defp from_now(seconds), do: :os.system_time(:seconds) + seconds
 
-  defp to_reply_tuple(message), do: {:reply, message}
-
-  defp build_reminder_about(user, subject) do
-    %Message{
-      user: user,
-      text: "You asked me to remind you #{subject}.",
-      type: "chat"
-    }
+  defp schedule_in(msg, seconds) do
+    Elix.MessageScheduler.send_at({:reply, msg}, from_now(seconds))
   end
 end
