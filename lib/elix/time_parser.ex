@@ -2,9 +2,9 @@ defmodule Elix.TimeParser do
 
   @second_names ~w(second seconds s)
   @minute_names ~w(minute minutes min mins m)
-  @hour_names ~w(hour hours hr hrs h)
-  @day_names ~w(day days d)
-  @week_names ~w(week weeks wk wks w)
+  @hour_names   ~w(hour hours hr hrs h)
+  @day_names    ~w(day days d)
+  @week_names   ~w(week weeks wk wks w)
 
   def from_now(time_string) when is_binary(time_string) do
     time_string
