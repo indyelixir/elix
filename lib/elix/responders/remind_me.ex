@@ -7,7 +7,7 @@ defmodule Elix.Responders.RemindMe do
   alias Hedwig.Message
 
   @usage """
-  remind me <thing> in <time> - Sets a reminder
+  remind me <thing> in <time> - Schedules a reminder
   """
   hear ~r/remind me (.+) in (.+)/i,
     %Message{matches: %{1 => subject, 2 => time_string}} = msg do
