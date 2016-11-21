@@ -4,6 +4,7 @@ defmodule Elix.MessageScheduler.RedisStore do
   to binary for storage in a Redis set sorted by timestamp.
   """
 
+  @behaviour Elix.MessageScheduler.Store
   @namespace "scheduled_messages"
 
   @doc """
