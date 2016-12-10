@@ -2,9 +2,10 @@ defmodule Elix.Responders.RemindMeTest do
   use Hedwig.RobotCase
   import Elix.MessageHelpers
 
+  @moduletag start_robot: true, name: bot_name, responders: [{Elix.Responders.RemindMe, []}]
+
   describe "Elix.Responders.RemindMe" do
 
-    @tag start_robot: true, name: bot_name, responders: [{Elix.Responders.RemindMe, []}]
     test "responds with the reminder", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("remind me to eat in 15 seconds")}}
 
@@ -12,7 +13,6 @@ defmodule Elix.Responders.RemindMeTest do
       assert text == to_user "Okay, I’ll remind you to eat in 15 seconds."
     end
 
-    @tag start_robot: true, name: bot_name, responders: [{Elix.Responders.RemindMe, []}]
     test "is helpful about parse errors", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("remind me to explode in WAIT NO NEVER")}}
 
