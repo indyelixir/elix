@@ -12,7 +12,8 @@ config :elix, Elix.Robot,
     {Hedwig.Responders.ShipIt, []},
     {Elix.Responders.Guys, []},
     {Elix.Responders.GifMe, []},
-    {Elix.Responders.Lists, []}
+    {Elix.Responders.Lists, []},
+    {Elix.Responders.AchievementUnlocked, []}
   ]
 
 
