@@ -35,7 +35,7 @@ defmodule Elix.Mixfile do
   defp deps do
     [
       {:hedwig, github: "hedwig-im/hedwig"},
-      {:hedwig_flowdock, "~> 0.1"},
+      {:hedwig_flowdock, github: "stevegrossi/hedwig_flowdock"},
       {:httpoison, "~> 0.9.0"},
       {:redix, "~> 0.4"},
       {:credo, "~> 0.4", only: [:dev, :test]},
