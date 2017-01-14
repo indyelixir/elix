@@ -2,7 +2,7 @@ defmodule Elix.Responders.RemindMeTest do
   use Hedwig.RobotCase
   import Elix.MessageHelpers
 
-  @moduletag start_robot: true, name: bot_name, responders: [{Elix.Responders.RemindMe, []}]
+  @moduletag start_robot: true, name: bot_name(), responders: [{Elix.Responders.RemindMe, []}]
 
   describe "Elix.Responders.RemindMe" do
 

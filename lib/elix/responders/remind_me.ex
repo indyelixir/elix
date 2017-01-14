@@ -20,7 +20,7 @@ defmodule Elix.Responders.RemindMe do
 
         "Okay, I’ll remind you #{subject} in #{time_string}."
       else
-        {:error, :parse_error} -> "Sorry, I don’t understand that time frame. You can say “Remind me [something] in [number]seconds|minutes|hours|days|weeks”."
+        {:error, :parse_error} -> "Sorry, I don’t understand that time frame. You can say “Remind me [something] in [number] seconds|minutes|hours|days|weeks”."
       end
 
     reply(msg, response)
