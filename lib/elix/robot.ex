@@ -8,4 +8,15 @@ defmodule Elix.Robot do
     {:ok, state}
   end
 
+  def handle_disconnect(_reason, state) do
+    {:reconnect, 5000, state}
+  end
+
+  def handle_in(%Hedwig.Message{} = msg, state) do
+    {:dispatch, msg, state}
+  end
+
+  def handle_in(_msg, state) do
+    {:noreply, state}
+  end
 end

@@ -13,6 +13,7 @@ config :elix, Elix.Robot,
     {Elix.Responders.Guys, []},
     {Elix.Responders.GifMe, []},
     {Elix.Responders.Lists, []},
+    {Elix.Responders.AchievementUnlocked, []},
     {Elix.Responders.RemindMe, []}
   ]
 
