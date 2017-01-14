@@ -11,32 +11,21 @@ defmodule Elix.Responders.AchievementUnlocked do
   <User> unlock[|s|ed] achievement <Achievement> - Replies with an image URL
   """
   hear ~r/(.+) unlocks?(?:ed)? achievement (.+)/i, %Message{matches: matches} = msg do
-    reply(msg, image_url(matches[1], matches[2]))
+    reply(msg, image_url(matches[2]))
   end
 
-  defp image_url(user, achievement) do
+  defp image_url(achievement) do
     base_url = "http://achievement-unlocked.herokuapp.com/xbox/"
     path = URI.encode(achievement)
-    query_string = build_query_string(user)
+    query_string = build_query_string
 
-    base_url <> path <> "?" <> query_string
+    "\n\n" <> base_url <> path <> ".jpg?" <> query_string
   end
 
-  defp build_query_string(user) do
+  defp build_query_string do
     URI.encode_query(%{
       header: "ACHIEVEMENT%20UNLOCKED",
-      # email: user.emai
+      email: "xbox@indyelixir.org"
     })
   end
-  #
-  # defp make_request(api_url) do
-  #   @api_client.get(api_url)
-  # end
-  #
-  # defp handle_response({:ok, response}) do
-  #   Enum.random(response["data"])["images"]["original"]["url"]
-  # end
-  # defp handle_response({:error, _reason}) do
-  #   "I’m sorry, Giphy isn’t talking to me right now."
-  # end
 end
