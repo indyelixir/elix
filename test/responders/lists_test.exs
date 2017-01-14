@@ -2,8 +2,8 @@ defmodule Elix.Responders.ListsTest do
   use Hedwig.RobotCase
   import Elix.MessageHelpers
 
-  @moduletag start_robot: true, name: bot_name, responders: [{Elix.Responders.Lists, []}]
-  
+  @moduletag start_robot: true, name: bot_name(), responders: [{Elix.Responders.Lists, []}]
+
   describe "Elix.Responders.Lists" do
 
     test "'show lists' displays all lists", %{adapter: adapter, msg: msg} do

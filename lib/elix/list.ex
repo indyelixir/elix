@@ -17,14 +17,14 @@ defmodule Elix.List do
 
   """
   def all_names do
-    command!(["LRANGE", lists_key, 0, -1])
+    command!(["LRANGE", lists_key(), 0, -1])
   end
 
   @doc """
   Creates a new list by name, returning it.
   """
   def create(list_name) do
-    command!(["RPUSH", lists_key, list_name])
+    command!(["RPUSH", lists_key(), list_name])
 
     %__MODULE__{name: list_name, items: []}
   end
@@ -34,7 +34,7 @@ defmodule Elix.List do
   """
   def delete(%__MODULE__{name: list_name} = list) do
     clear_items(list)
-    command!(["LREM", lists_key, 0, list_name])
+    command!(["LREM", lists_key(), 0, list_name])
     :ok
   end
 
@@ -77,7 +77,7 @@ defmodule Elix.List do
 
   """
   def get_by_number(list_num) when is_integer(list_num) and list_num > 0 do
-    case command!(["LINDEX", lists_key, list_num - 1]) do
+    case command!(["LINDEX", lists_key(), list_num - 1]) do
       nil  -> {:error, :list_not_found}
       name -> {:ok, %__MODULE__{name: name, items: get_items(name)}}
     end
@@ -160,7 +160,7 @@ defmodule Elix.List do
   end
 
   defp list_key(list_name) do
-    "#{lists_key}:#{to_key(list_name)}"
+    "#{lists_key()}:#{to_key(list_name)}"
   end
 
   defp to_key(name) do

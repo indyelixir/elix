@@ -17,7 +17,7 @@ defmodule Elix.Responders.AchievementUnlocked do
   defp image_url(achievement) do
     base_url = "http://achievement-unlocked.herokuapp.com/xbox/"
     path = URI.encode(achievement)
-    query_string = build_query_string
+    query_string = build_query_string()
 
     "\n\n" <> base_url <> path <> ".jpg?" <> query_string
   end
