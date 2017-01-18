@@ -38,6 +38,7 @@ defmodule Elix.Mixfile do
       {:hedwig_flowdock, github: "stevegrossi/hedwig_flowdock"},
       {:httpoison, "~> 0.9.0"},
       {:redix, "~> 0.4"},
+      {:honeybadger, "~> 0.1"},
       {:credo, "~> 0.4", only: [:dev, :test]},
       {:mix_test_watch, "~> 0.2", only: :dev}
     ]
