@@ -4,7 +4,7 @@ defmodule Elix.Mixfile do
   def project do
     [app: :elix,
      version: "0.1.0",
-     elixir: "~> 1.4.0",
+     elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -15,8 +15,10 @@ defmodule Elix.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :hedwig, :hedwig_flowdock, :httpoison],
-     mod: {Elix, []}]
+    [
+      mod: {Elix, []},
+      extra_applications: [:logger]
+    ]
   end
 
   # Specifies which paths to compile per environment
