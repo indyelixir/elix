@@ -40,7 +40,7 @@ defmodule Elix.Mixfile do
       {:hedwig_flowdock, github: "stevegrossi/hedwig_flowdock"},
       {:hedwig_giphy, "~> 0.1"},
       {:redix, "~> 0.4"},
-      {:honeybadger, "~> 0.1"},
+      {:honeybadger, "~> 0.1", only: [:prod]},
       {:credo, "~> 0.4", only: [:dev, :test]},
       {:mix_test_watch, "~> 0.2", only: :dev}
     ]
