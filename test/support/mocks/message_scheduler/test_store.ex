@@ -7,7 +7,7 @@ defmodule Elix.MessageScheduler.TestStore do
 
   def all, do: []
 
-  def add(_message, _timestamp), do: :ok
+  def add(_binary), do: :ok
 
-  def remove(_message), do: :ok
+  def remove(_binary), do: :ok
 end

@@ -12,25 +12,26 @@ defmodule Elix.MessageScheduler.RedisStore do
   of Elixir terms with their integer timestamps.
   """
   def all do
-    Redix.command!(:redix, ["ZRANGE", @namespace, 0, -1, "WITHSCORES"])
-    |> Enum.chunk(2)
-    |> Enum.map(fn([binary_message, timestamp_string]) ->
-         {decode(binary_message), String.to_integer(timestamp_string)}
-       end)
+    command!(["LRANGE", @namespace, 0, -1])
+    |> Enum.map(&decode/1)
   end
 
   @doc """
   Adds a message and its timestamp to the store.
   """
-  def add(message, timestamp) do
-    Redix.command!(:redix, ["ZADD", @namespace, timestamp, encode(message)])
+  def add(tuple) do
+    command!(["RPUSH", @namespace, encode(tuple)])
   end
 
   @doc """
   Removes a message and its timestamp from the store.
   """
-  def remove(message) do
-    Redix.command!(:redix, ["ZREM", @namespace, encode(message)])
+  def remove(tuple) do
+    command!(["LREM", @namespace, 0, encode(tuple)])
+  end
+
+  defp command!(instructions) do
+    Redix.command!(:redix, instructions)
   end
 
   defp encode(message) do

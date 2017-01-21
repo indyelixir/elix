@@ -3,6 +3,7 @@ defmodule Elix.MessageScheduler do
   Enables scheduling and sending chat messages in the future.
   """
   use GenServer
+  alias Elix.MessageScheduler.ScheduledMessage
 
   @store Application.get_env(:elix, :message_scheduler_store)
 
@@ -24,7 +25,7 @@ defmodule Elix.MessageScheduler do
 
   """
   def send_at(message, timestamp) do
-    GenServer.cast(__MODULE__, {:schedule, {message, timestamp}})
+    GenServer.cast(__MODULE__, {:schedule, ScheduledMessage.new(message, timestamp)})
   end
 
   def handle_cast(:init, _state) do
@@ -32,8 +33,8 @@ defmodule Elix.MessageScheduler do
     {:noreply, @store.all}
   end
 
-  def handle_cast({:schedule, {message, timestamp} = scheduled_message}, state) do
-    @store.add(message, timestamp)
+  def handle_cast({:schedule, %ScheduledMessage{} = scheduled_message}, state) do
+    @store.add(scheduled_message)
 
     {:noreply, [scheduled_message | state]}
   end
@@ -46,10 +47,10 @@ defmodule Elix.MessageScheduler do
   def handle_info(:heartbeat, state) do
     new_state =
       state
-      |> Stream.map(fn ({message, timestamp} = scheduled_message) ->
+      |> Stream.map(fn (%ScheduledMessage{message: message, timestamp: timestamp} = scheduled_message) ->
            if timestamp <= :os.system_time(:seconds) do
              GenServer.cast(Elix.Robot, message)
-             @store.remove(message)
+             @store.remove(scheduled_message)
              nil
            else
              scheduled_message
