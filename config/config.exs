@@ -10,8 +10,8 @@ config :elix, Elix.Robot,
     {Hedwig.Responders.Ping, []},
     {Hedwig.Responders.Help, []},
     {Hedwig.Responders.ShipIt, []},
+    {HedwigGiphy.Responders.GifMe, []},
     {Elix.Responders.Guys, []},
-    {Elix.Responders.GifMe, []},
     {Elix.Responders.Lists, []},
     {Elix.Responders.AchievementUnlocked, []},
     {Elix.Responders.RemindMe, []}
@@ -24,7 +24,6 @@ config :elix, Elix.Robot,
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
-config :elix, :api_client, Elix.APIClient
 config :elix, :redis_client, Redix
 config :elix, :message_scheduler_store, Elix.MessageScheduler.RedisStore
 
