@@ -32,10 +32,7 @@ defmodule Elix.Responders.Guys do
 
   # An infinite loop happens when Elix hears itself use the word "guys",
   # so we need Elix not to reply to itself. The `ignore_from_self?` config
-  # option appears to have been removed so we reproduce it here. With the
-  # Console adapter `user` is a string, but with the Flowdock adapter `user`
-  # is a `Hedwig.User` struct, hence the pattern matching.
+  # option appears to have been removed so we reproduce it here.
   defp from_self?(%Hedwig.Message{user: %Hedwig.User{name: "Elix"}}), do: true
-  defp from_self?(%Hedwig.Message{user: "Elix"}), do: true
   defp from_self?(%Hedwig.Message{}), do: false
 end
