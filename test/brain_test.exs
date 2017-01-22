@@ -10,6 +10,12 @@ defmodule Elix.BrainTest do
     assert Brain.all("people") == ["Jane", "Kate"]
   end
 
+  test ".set sets a key to a value" do
+    assert Brain.all("people") == ["Jane", "Kate"]
+    Brain.set("people", "José")
+    assert Brain.all("people") == "José"
+  end
+
   test ".delete deletes all items at key" do
     Brain.delete("people")
 

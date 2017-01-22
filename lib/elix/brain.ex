@@ -15,9 +15,12 @@ defmodule Elix.Brain do
     GenServer.cast(__MODULE__, {:add, key, item})
   end
 
-  # is this just get?
   def all(key) do
     GenServer.call(__MODULE__, {:all, key})
+  end
+
+  def set(key, val) do
+    GenServer.cast(__MODULE__, {:set, key, val})
   end
 
   def delete(key) do
@@ -34,6 +37,11 @@ defmodule Elix.Brain do
 
   # Callbacks
 
+  def handle_cast({:set, key, value}, state) do
+    new_state = put_in(state, [key], value)
+
+    {:noreply, new_state}
+  end
   def handle_cast({:add, key, item}, state) do
     new_state =
       Map.update(state, key, [item], fn (list) ->
