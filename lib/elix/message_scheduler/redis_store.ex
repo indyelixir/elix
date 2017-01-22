@@ -4,6 +4,8 @@ defmodule Elix.MessageScheduler.RedisStore do
   to binary for storage in a Redis set sorted by timestamp.
   """
 
+  alias Elix.Brain
+
   @behaviour Elix.MessageScheduler.Store
   @namespace "scheduled_messages"
 
@@ -12,7 +14,8 @@ defmodule Elix.MessageScheduler.RedisStore do
   of Elixir terms with their integer timestamps.
   """
   def all do
-    command!(["LRANGE", @namespace, 0, -1])
+    @namespace
+    |> Brain.all
     |> Enum.map(&decode/1)
   end
 
@@ -20,18 +23,14 @@ defmodule Elix.MessageScheduler.RedisStore do
   Adds a message and its timestamp to the store.
   """
   def add(tuple) do
-    command!(["RPUSH", @namespace, encode(tuple)])
+    Brain.add(@namespace, encode(tuple))
   end
 
   @doc """
   Removes a message and its timestamp from the store.
   """
   def remove(tuple) do
-    command!(["LREM", @namespace, 0, encode(tuple)])
-  end
-
-  defp command!(instructions) do
-    Redix.command!(:redix, instructions)
+    Brain.remove(@namespace, encode(tuple))
   end
 
   defp encode(message) do

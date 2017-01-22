@@ -24,7 +24,7 @@ defmodule Elix.MessageScheduler do
       :ok
 
   """
-  def send_at(message, timestamp) do
+  def send_at(timestamp, message) do
     GenServer.cast(__MODULE__, {:schedule, ScheduledMessage.new(message, timestamp)})
   end
 

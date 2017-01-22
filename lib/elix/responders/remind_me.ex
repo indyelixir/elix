@@ -33,6 +33,6 @@ defmodule Elix.Responders.RemindMe do
   defp from_now(seconds), do: :os.system_time(:seconds) + seconds
 
   defp schedule_in(msg, seconds) do
-    Elix.MessageScheduler.send_at({:reply, msg}, from_now(seconds))
+    Elix.MessageScheduler.send_at(from_now(seconds), {:reply, msg})
   end
 end
