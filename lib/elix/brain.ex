@@ -5,50 +5,64 @@ defmodule Elix.Brain do
 
   # @TODO: should this handle encoding/decoding things?
 
-  @redis_client Application.get_env(:elix, :redis_client)
+  use GenServer
 
-  @doc """
-  Returns all strings stored under a key
-  """
-  def all(key) when is_binary(key) do
-    command!(["LRANGE", key, 0, -1])
-    # @TODO: handle when key points to non-list
+  def start_link(state \\ %{}) do
+    GenServer.start_link(__MODULE__, state, [name: __MODULE__])
   end
 
-  @doc """
-  Deletes the string or list stored under a key
-  """
-  def delete(key) when is_binary(key) do
-    command!(["DEL", key])
+  def add(key, item) do
+    GenServer.cast(__MODULE__, {:add, key, item})
   end
 
-  @doc """
-  Stores an additional string under a key
-  """
-  def add(key, item) when is_binary(key) and is_binary(item) do
-    command!(["RPUSH", key, item])
-    # @TODO: handle when key points to non-list
+  # is this just get?
+  def all(key) do
+    GenServer.call(__MODULE__, {:all, key})
   end
 
-  @doc """
-  Removes a string from a list stored under a key
-  """
-  def remove(key, item) when is_binary(key) and is_binary(item) do
-    command!(["LREM", key, 0, item])
-    # @TODO: handle when key points to non-list
-    # @TODO: handle when item is not in list?
+  def delete(key) do
+    GenServer.cast(__MODULE__, {:delete, key})
   end
 
-  @doc """
-  Returns the item in a list at a 0-based index
-  """
-  def at_index(key, index) when is_binary(key) and is_integer(index) and index >= 0 do
-    command!(["LINDEX", key, index])
-    # @TODO: handle when key points to non-list
-    # @TODO: handle out of range
+  def remove(key, item) do
+    GenServer.cast(__MODULE__, {:remove, key, item})
   end
 
-  defp command!(instructions) do
-    @redis_client.command!(:redix, instructions)
+  def at_index(key, index) do
+    GenServer.call(__MODULE__, {:at_index, key, index})
+  end
+
+  # Callbacks
+
+  def handle_cast({:add, key, item}, state) do
+    new_state =
+      Map.update(state, key, [item], fn (list) ->
+        list ++ [item]
+      end)
+
+    {:noreply, new_state}
+  end
+  def handle_cast({:delete, key}, state) do
+    {:noreply, Map.delete(state, key)}
+  end
+  def handle_cast({:remove, key, item}, state) do
+    new_state =
+      Map.update(state, key, [], fn (list) ->
+        list -- [item]
+      end)
+
+    {:noreply, new_state}
+  end
+
+  def handle_call({:all, key}, _from, state) do
+    {:reply, Map.get(state, key), state}
+  end
+  def handle_call({:at_index, key, index}, _from, state) do
+    value =
+      state
+      |> Map.get(key)
+      |> Enum.at(index)
+
+    {:reply, value, state}
   end
 end
