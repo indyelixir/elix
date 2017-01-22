@@ -17,7 +17,7 @@ defmodule Elix.List do
 
   """
   def all_names do
-    Brain.get(@namespace)
+    Brain.get(@namespace) || []
   end
 
   @doc """

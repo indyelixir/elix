@@ -72,6 +72,8 @@ defmodule Elix.MessageScheduler do
     Process.send_after(self(), :heartbeat, :timer.seconds(1))
   end
 
+  # This is unnecessary for the process brain. I feel like
+  # it should be a concern of the Redis brain.
   defp encode(message) do
     :erlang.term_to_binary(message)
   end
