@@ -11,7 +11,7 @@ defmodule Elix.Responders.Lists do
   show lists - Displays all lists
   """
   respond ~r/show lists\Z/i, msg do
-    reply(msg, render_items(List.all_names))
+    send(msg, render_items(List.all_names))
   end
 
   @usage """
@@ -20,7 +20,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/create list (.+)/i, %Message{matches: %{1 => list_name}} = msg do
     %List{} = List.create(list_name)
 
-    reply(msg, render_items(List.all_names))
+    send(msg, render_items(List.all_names))
   end
 
   @usage """
@@ -29,7 +29,7 @@ defmodule Elix.Responders.Lists do
   respond ~r/show list (.+)/i, %Message{matches: %{1 => list_id}} = msg do
     response = with_list(list_id, &render_list(&1))
 
-    reply(msg, response)
+    send(msg, response)
   end
 
   @usage """
@@ -42,7 +42,7 @@ defmodule Elix.Responders.Lists do
         render_items(List.all_names)
       end)
 
-    reply(msg, response)
+    send(msg, response)
   end
 
   @usage """
@@ -56,7 +56,7 @@ defmodule Elix.Responders.Lists do
         |> render_list
       end)
 
-    reply(msg, response)
+    send(msg, response)
   end
 
   @usage """
@@ -70,7 +70,7 @@ defmodule Elix.Responders.Lists do
         |> render_list()
       end)
 
-    reply(msg, response)
+    send(msg, response)
   end
 
   @usage """
@@ -84,7 +84,7 @@ defmodule Elix.Responders.Lists do
         |> render_list()
       end)
 
-    reply(msg, response)
+    send(msg, response)
   end
 
   defp with_list(list_identifier, function) do
