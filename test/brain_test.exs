@@ -2,41 +2,33 @@ defmodule Elix.BrainTest do
   use ExUnit.Case, async: true
   alias Elix.Brain
 
-  test ".all returns all items at key" do
-    {:ok, _} = Brain.start_link(%{"foo" => ["bar"]})
-    assert Brain.all("foo") == ["bar"]
+  setup do
+    [{:ok, _} = Brain.start_link(%{"people" => ["Jane", "Kate"]})]
   end
 
-  test ".add returns all items at key" do
-    {:ok, _} = Brain.start_link
-    assert Brain.all("people") == nil
-
-    Brain.add("people", "Steve")
-
-    assert Brain.all("people") == ["Steve"]
+  test ".all returns all items at key" do
+    assert Brain.all("people") == ["Jane", "Kate"]
   end
 
   test ".delete deletes all items at key" do
-    {:ok, _} = Brain.start_link(%{"foo" => ["bar"]})
-    assert Brain.all("foo") == ["bar"]
+    Brain.delete("people")
 
-    Brain.delete("foo")
-
-    assert Brain.all("foo") == nil
+    assert Brain.all("people") == nil
   end
 
-  test ".remove removes an item from a list" do
-    {:ok, _} = Brain.start_link(%{"foo" => ["bar", "baz"]})
-    assert Brain.all("foo") == ["bar", "baz"]
+  test ".add adds an item to a list at the given key" do
+    Brain.add("people", "Steve")
 
-    Brain.remove("foo", "bar")
+    assert Brain.all("people") == ["Jane", "Kate", "Steve"]
+  end
 
-    assert Brain.all("foo") == ["baz"]
+  test ".remove removes an item from a list at the given key" do
+    Brain.remove("people", "Kate")
+
+    assert Brain.all("people") == ["Jane"]
   end
 
   test ".at_index gets an item from a list by key at a given index" do
-    {:ok, _} = Brain.start_link(%{"foo" => ["bar", "baz", "qux"]})
-
-    assert Brain.at_index("foo", 1) == "baz"
+    assert Brain.at_index("people", 1) == "Kate"
   end
 end
