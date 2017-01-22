@@ -6,32 +6,32 @@ defmodule Elix.BrainTest do
     [{:ok, _} = Brain.start_link(%{"people" => ["Jane", "Kate"]})]
   end
 
-  test ".all returns all items at key" do
-    assert Brain.all("people") == ["Jane", "Kate"]
+  test ".get returns all items at key" do
+    assert Brain.get("people") == ["Jane", "Kate"]
   end
 
   test ".set sets a key to a value" do
-    assert Brain.all("people") == ["Jane", "Kate"]
+    assert Brain.get("people") == ["Jane", "Kate"]
     Brain.set("people", "José")
-    assert Brain.all("people") == "José"
+    assert Brain.get("people") == "José"
   end
 
   test ".delete deletes all items at key" do
     Brain.delete("people")
 
-    assert Brain.all("people") == nil
+    assert Brain.get("people") == nil
   end
 
   test ".add adds an item to a list at the given key" do
     Brain.add("people", "Steve")
 
-    assert Brain.all("people") == ["Jane", "Kate", "Steve"]
+    assert Brain.get("people") == ["Jane", "Kate", "Steve"]
   end
 
   test ".remove removes an item from a list at the given key" do
     Brain.remove("people", "Kate")
 
-    assert Brain.all("people") == ["Jane"]
+    assert Brain.get("people") == ["Jane"]
   end
 
   test ".at_index gets an item from a list by key at a given index" do

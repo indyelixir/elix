@@ -15,8 +15,8 @@ defmodule Elix.Brain do
     GenServer.cast(__MODULE__, {:add, key, item})
   end
 
-  def all(key) do
-    GenServer.call(__MODULE__, {:all, key})
+  def get(key) do
+    GenServer.call(__MODULE__, {:get, key})
   end
 
   def set(key, val) do
@@ -62,7 +62,7 @@ defmodule Elix.Brain do
     {:noreply, new_state}
   end
 
-  def handle_call({:all, key}, _from, state) do
+  def handle_call({:get, key}, _from, state) do
     {:reply, Map.get(state, key), state}
   end
   def handle_call({:at_index, key, index}, _from, state) do

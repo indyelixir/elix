@@ -15,7 +15,7 @@ defmodule Elix.MessageScheduler.RedisStore do
   """
   def all do
     @namespace
-    |> Brain.all
+    |> Brain.get
     |> Enum.map(&decode/1)
   end
 

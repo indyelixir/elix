@@ -17,7 +17,7 @@ defmodule Elix.List do
 
   """
   def all_names do
-    Brain.all(@namespace)
+    Brain.get(@namespace)
   end
 
   @doc """
@@ -148,7 +148,7 @@ defmodule Elix.List do
     get_items(list_name)
   end
   defp get_items(list_name) do
-    Brain.all(list_key(list_name))
+    Brain.get(list_key(list_name))
   end
 
   defp list_key(list_name) do
