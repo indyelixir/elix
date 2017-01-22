@@ -1,8 +1,20 @@
 defmodule Elix.Responders.ListsTest do
   use Hedwig.RobotCase
   import Elix.MessageHelpers
+  alias Elix.Brain
 
   @moduletag start_robot: true, name: bot_name(), responders: [{Elix.Responders.Lists, []}]
+
+  setup do
+    [{:ok, _} = Brain.start_link(
+      %{
+        "lists" => ["Groceries", "PLIBMTLBHGATY", "Places to Visit"],
+        "lists:groceries" => ["platypus milk"],
+        "lists:plibmtlbhgaty" => [],
+        "lists:places-to-visit" => ["Indianapolis", "The Moon", "Space"]
+      }
+    )]
+  end
 
   describe "Elix.Responders.Lists" do
 
@@ -18,13 +30,14 @@ defmodule Elix.Responders.ListsTest do
     end
 
     test "'create list' creates a list", %{adapter: adapter, msg: msg} do
-      send adapter, {:message, %{msg | text: to_bot("create list Places to Visit")}}
+      send adapter, {:message, %{msg | text: to_bot("create list Robot Features")}}
 
       assert_receive {:message, %{text: text}}
       assert text == """
       1. Groceries
       2. PLIBMTLBHGATY
       3. Places to Visit
+      4. Robot Features
       """
     end
 
@@ -71,26 +84,20 @@ defmodule Elix.Responders.ListsTest do
     test "'delete list' deletes a list by name", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("delete list Places to Visit")}}
 
-      # Because we render the list from fixture data in tests, it still
-      # includes “Places to Visit” even though we’re testing its deletion
       assert_receive {:message, %{text: text}}
       assert text == """
       1. Groceries
       2. PLIBMTLBHGATY
-      3. Places to Visit
       """
     end
 
     test "'delete list' deletes a list by number", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("delete list 3")}}
 
-      # Because we render the list from fixture data, it includes
-      # “Places to Visit” even though we’re testing its deletion
       assert_receive {:message, %{text: text}}
       assert text == """
       1. Groceries
       2. PLIBMTLBHGATY
-      3. Places to Visit
       """
     end
 
