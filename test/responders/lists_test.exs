@@ -6,14 +6,10 @@ defmodule Elix.Responders.ListsTest do
   @moduletag start_robot: true, name: bot_name(), responders: [{Elix.Responders.Lists, []}]
 
   setup do
-    [{:ok, _} = Brain.start_link(
-      %{
-        "lists" => ["Groceries", "PLIBMTLBHGATY", "Places to Visit"],
-        "lists:groceries" => ["platypus milk"],
-        "lists:plibmtlbhgaty" => [],
-        "lists:places-to-visit" => ["Indianapolis", "The Moon", "Space"]
-      }
-    )]
+    Brain.set("lists", ["Groceries", "PLIBMTLBHGATY", "Places to Visit"])
+    Brain.set("lists:groceries", ["platypus milk"])
+    Brain.set("lists:plibmtlbhgaty", [])
+    Brain.set("lists:places-to-visit", ["Indianapolis", "The Moon", "Space"])
   end
 
   describe "Elix.Responders.Lists" do

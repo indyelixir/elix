@@ -4,8 +4,9 @@ defmodule Elix.MessageScheduler do
   """
   use GenServer
   alias Elix.MessageScheduler.ScheduledMessage
+  alias Elix.Brain
 
-  @store Application.get_env(:elix, :message_scheduler_store)
+  @namespace "scheduled_messages"
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
@@ -29,12 +30,17 @@ defmodule Elix.MessageScheduler do
   end
 
   def handle_cast(:init, _state) do
+    state =
+      @namespace
+      |> Brain.get || []
+      |> Enum.map(&decode/1)
+
     heartbeat()
-    {:noreply, @store.all}
+    {:noreply, state}
   end
 
   def handle_cast({:schedule, %ScheduledMessage{} = scheduled_message}, state) do
-    @store.add(scheduled_message)
+    Brain.add(@namespace, encode(scheduled_message))
 
     {:noreply, [scheduled_message | state]}
   end
@@ -50,7 +56,7 @@ defmodule Elix.MessageScheduler do
       |> Stream.map(fn (%ScheduledMessage{message: message, timestamp: timestamp} = scheduled_message) ->
            if timestamp <= :os.system_time(:seconds) do
              GenServer.cast(Elix.Robot, message)
-             @store.remove(scheduled_message)
+             Brain.remove(@namespace, encode(scheduled_message))
              nil
            else
              scheduled_message
@@ -64,5 +70,13 @@ defmodule Elix.MessageScheduler do
 
   defp heartbeat do
     Process.send_after(self(), :heartbeat, :timer.seconds(1))
+  end
+
+  defp encode(message) do
+    :erlang.term_to_binary(message)
+  end
+
+  defp decode(binary) do
+    :erlang.binary_to_term(binary)
   end
 end

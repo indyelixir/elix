@@ -3,7 +3,7 @@ defmodule Elix.BrainTest do
   alias Elix.Brain
 
   setup do
-    [{:ok, _} = Brain.start_link(%{"people" => ["Jane", "Kate"]})]
+    Brain.set("people", ["Jane", "Kate"])
   end
 
   test ".get returns all items at key" do

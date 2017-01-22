@@ -5,13 +5,9 @@ defmodule Elix.ListTest do
   doctest Elix.List
 
   setup do
-    [{:ok, _} = Brain.start_link(
-      %{
-        "lists" => ["Groceries", "PLIBMTLBHGATY", "Places to Visit"],
-        "lists:groceries" => ["platypus milk"],
-        "lists:plibmtlbhgaty" => [],
-        "lists:places-to-visit" => ["Indianapolis", "The Moon", "Space"]
-      }
-    )]
+    Brain.set("lists", ["Groceries", "PLIBMTLBHGATY", "Places to Visit"])
+    Brain.set("lists:groceries", ["platypus milk"])
+    Brain.set("lists:plibmtlbhgaty", [])
+    Brain.set("lists:places-to-visit", ["Indianapolis", "The Moon", "Space"])
   end
 end
