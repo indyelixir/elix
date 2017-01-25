@@ -1,18 +1,41 @@
 defmodule Elix.Brain do
   @moduledoc """
-  A general-purpose key-value storage mechanism.
+  A general-purpose key-value storage mechanism. For simplicity, keys are always
+  strings, and values are always lists, though the lists can contain any terms.
   """
 
   alias Elix.Brain.ProcessStore
 
-  @behaviour Elix.Brain.Store
   @store Application.get_env(:elix, :brain, ProcessStore)
 
-  defdelegate start_link, to: @store
-  defdelegate add(key, item), to: @store
-  defdelegate get(key), to: @store
-  defdelegate set(key, val), to: @store
-  defdelegate delete(key), to: @store
-  defdelegate remove(key, item), to: @store
-  defdelegate at_index(key, index), to: @store
+  def start_link do
+    @store.start_link
+  end
+
+  def set(key, val) when is_binary(key) and is_list(val) do
+    @store.set(key, val)
+  end
+
+  def get(key) when is_binary(key) do
+    @store.get(key) || []
+  end
+
+  def add(key, item) when is_binary(key) do
+    @store.add(key, item)
+  end
+
+  def delete(key) when is_binary(key) do
+    @store.delete(key)
+  end
+
+  def remove(key, item) when is_binary(key) do
+    @store.remove(key, item)
+  end
+
+  def at_index(key, index) when is_binary(key)
+                            and is_integer(index)
+                            and index >= 0 do
+
+    @store.at_index(key, index)
+  end
 end

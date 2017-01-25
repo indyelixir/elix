@@ -28,7 +28,7 @@ defmodule Elix.Brain.RedisStore do
   end
 
   @doc """
-  Deletes the string or list stored under a key
+  Deletes the value stored under a key
   """
   def delete(key) when is_binary(key) do
     command!(["DEL", key])
