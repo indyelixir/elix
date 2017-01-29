@@ -3,9 +3,18 @@ defmodule Elix.BrainTest do
   alias Elix.Brain
 
   setup do
-    Redix.command!(:redis, ["FLUSHDB"])
     Brain.set("people", ["Jane", "Kate"])
-    :ok
+  end
+
+  describe ".get" do
+
+    test "returns the value at a key" do
+      assert Brain.all("people") == ["Jane", "Kate"]
+    end
+
+    test "returns an empty list when key is empty" do
+      assert Brain.all("nonexistent key") == []
+    end
   end
 
   describe ".set" do
@@ -14,24 +23,6 @@ defmodule Elix.BrainTest do
       assert Brain.all("people") == ["Jane", "Kate"]
       Brain.set("people", ["José"])
       assert Brain.all("people") == ["José"]
-    end
-
-    test "handles complex terms" do
-      assert Brain.all("people") == ["Jane", "Kate"]
-      term = %{first_name: "José", last_name: "Valim"}
-      Brain.set("people", [term])
-      assert Brain.all("people") == [term]
-    end
-  end
-
-  describe ".all" do
-
-    test "returns the value at a key" do
-      assert Brain.all("people") == ["Jane", "Kate"]
-    end
-
-    test "returns an empty list when key is empty" do
-      assert Brain.all("nonexistent key") == []
     end
   end
 
@@ -54,12 +45,6 @@ defmodule Elix.BrainTest do
       Brain.add("does not exist", "Leonardo")
       assert Brain.all("does not exist") == ["Leonardo"]
     end
-
-    test "adds complex terms to the list" do
-      term = %{first_name: "José", last_name: "Valim"}
-      Brain.add("people", term)
-      assert Brain.all("people") == ["Jane", "Kate", term]
-    end
   end
 
   describe ".remove" do
@@ -76,13 +61,6 @@ defmodule Elix.BrainTest do
     test "does not error if the key is empty" do
       Brain.remove("programmers", "Ada")
     end
-
-    test "removes complex terms to the list" do
-      term = %{first_name: "José", last_name: "Valim"}
-      Brain.add("people", term)
-      Brain.remove("people", term)
-      assert Brain.all("people") == ["Jane", "Kate"]
-    end
   end
 
   describe ".at_index" do
@@ -93,12 +71,6 @@ defmodule Elix.BrainTest do
 
     test "returns nil with nothing at the index" do
       assert Brain.at_index("people", 999) == nil
-    end
-
-    test "gets a complex term by index" do
-      term = %{first_name: "José", last_name: "Valim"}
-      Brain.add("people", term)
-      assert Brain.at_index("people", 2) == term
     end
   end
 end
