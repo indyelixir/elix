@@ -5,72 +5,49 @@ defmodule Elix.Brain.ProcessStore do
 
   @behaviour Elix.Brain.Store
 
-  use GenServer
-
   def start_link do
-    GenServer.start_link(__MODULE__, %{}, [name: __MODULE__])
+    Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
-  def add(key, item) do
-    GenServer.cast(__MODULE__, {:add, key, item})
+  def set(key, value) do
+    Agent.update(__MODULE__, fn (state) ->
+      Map.put(state, key, value)
+    end)
   end
 
   def get(key) do
-    GenServer.call(__MODULE__, {:get, key})
-  end
-
-  def set(key, val) do
-    GenServer.cast(__MODULE__, {:set, key, val})
+    Agent.get(__MODULE__, fn (state) ->
+      Map.get(state, key, [])
+    end)
   end
 
   def delete(key) do
-    GenServer.cast(__MODULE__, {:delete, key})
+    Agent.update(__MODULE__, fn (state) ->
+      Map.delete(state, key)
+    end)
   end
 
-  def remove(key, item) do
-    GenServer.cast(__MODULE__, {:remove, key, item})
-  end
-
-  def at_index(key, index) do
-    GenServer.call(__MODULE__, {:at_index, key, index})
-  end
-
-  # Callbacks
-
-  def handle_cast({:set, key, value}, state) do
-    new_state = put_in(state, [key], value)
-
-    {:noreply, new_state}
-  end
-  def handle_cast({:add, key, item}, state) do
-    new_state =
+  def add(key, item) do
+    Agent.update(__MODULE__, fn (state) ->
       Map.update(state, key, [item], fn (list) ->
         list ++ [item]
       end)
+    end)
+  end
 
-    {:noreply, new_state}
-  end
-  def handle_cast({:delete, key}, state) do
-    {:noreply, Map.delete(state, key)}
-  end
-  def handle_cast({:remove, key, item}, state) do
-    new_state =
+  def remove(key, item) do
+    Agent.update(__MODULE__, fn (state) ->
       Map.update(state, key, [], fn (list) ->
         list -- [item]
       end)
-
-    {:noreply, new_state}
+    end)
   end
 
-  def handle_call({:get, key}, _from, state) do
-    {:reply, Map.get(state, key), state}
-  end
-  def handle_call({:at_index, key, index}, _from, state) do
-    value =
+  def at_index(key, index) do
+    Agent.get(__MODULE__, fn (state) ->
       state
       |> Map.get(key)
       |> Enum.at(index)
-
-    {:reply, value, state}
+    end)
   end
 end

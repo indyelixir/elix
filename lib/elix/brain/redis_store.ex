@@ -1,6 +1,6 @@
 defmodule Elix.Brain.RedisStore do
   @moduledoc """
-  A Redis back-end for Elix.Brain which persists memory to disk.
+  A Redis back-end for the Brain which persists memory to disk.
   """
 
   # @TODO: should this handle encoding/decoding things?
