@@ -16,16 +16,16 @@ defmodule Elix.Brain do
     @store.set(key, val)
   end
 
-  def get(key) when is_binary(key) do
+  def all(key) when is_binary(key) do
     @store.get(key) || []
-  end
-
-  def add(key, item) when is_binary(key) do
-    @store.add(key, item)
   end
 
   def delete(key) when is_binary(key) do
     @store.delete(key)
+  end
+
+  def add(key, item) when is_binary(key) do
+    @store.add(key, item)
   end
 
   def remove(key, item) when is_binary(key) do

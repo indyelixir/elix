@@ -32,7 +32,7 @@ defmodule Elix.MessageScheduler do
   def handle_cast(:init, _state) do
     state =
       @namespace
-      |> Brain.get || []
+      |> Brain.all
       |> Enum.map(&decode/1)
 
     heartbeat()

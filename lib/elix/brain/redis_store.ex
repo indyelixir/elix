@@ -1,6 +1,6 @@
 defmodule Elix.Brain.RedisStore do
   @moduledoc """
-  A general-purpose key-value storage mechanism.
+  A Redis back-end for Elix.Brain which persists memory to disk.
   """
 
   # @TODO: should this handle encoding/decoding things?
@@ -15,14 +15,14 @@ defmodule Elix.Brain.RedisStore do
   @doc """
   Sets a key to a value
   """
-  def set(key, value) when is_binary(key) do
+  def set(key, value) do
     command!(["SET", key, value])
   end
 
   @doc """
   Returns all strings stored under a key
   """
-  def get(key) when is_binary(key) do
+  def get(key) do
     command!(["LRANGE", key, 0, -1])
     # @TODO: handle when key points to non-list
   end
@@ -30,14 +30,14 @@ defmodule Elix.Brain.RedisStore do
   @doc """
   Deletes the value stored under a key
   """
-  def delete(key) when is_binary(key) do
+  def delete(key) do
     command!(["DEL", key])
   end
 
   @doc """
   Stores an additional string under a key
   """
-  def add(key, item) when is_binary(key) and is_binary(item) do
+  def add(key, item) do
     command!(["RPUSH", key, item])
     # @TODO: handle when key points to non-list
   end
@@ -45,7 +45,7 @@ defmodule Elix.Brain.RedisStore do
   @doc """
   Removes a string from a list stored under a key
   """
-  def remove(key, item) when is_binary(key) and is_binary(item) do
+  def remove(key, item) do
     command!(["LREM", key, 0, item])
     # @TODO: handle when key points to non-list
     # @TODO: handle when item is not in list?
@@ -54,7 +54,7 @@ defmodule Elix.Brain.RedisStore do
   @doc """
   Returns the item in a list at a 0-based index
   """
-  def at_index(key, index) when is_binary(key) and is_integer(index) and index >= 0 do
+  def at_index(key, index) do
     command!(["LINDEX", key, index])
     # @TODO: handle when key points to non-list
     # @TODO: handle out of range

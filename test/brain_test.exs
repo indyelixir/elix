@@ -9,20 +9,20 @@ defmodule Elix.BrainTest do
   describe ".get" do
 
     test "returns the value at a key" do
-      assert Brain.get("people") == ["Jane", "Kate"]
+      assert Brain.all("people") == ["Jane", "Kate"]
     end
 
     test "returns an empty list when key is empty" do
-      assert Brain.get("nonexistent key") == []
+      assert Brain.all("nonexistent key") == []
     end
   end
 
   describe ".set" do
 
     test "sets the value for a key" do
-      assert Brain.get("people") == ["Jane", "Kate"]
+      assert Brain.all("people") == ["Jane", "Kate"]
       Brain.set("people", ["José"])
-      assert Brain.get("people") == ["José"]
+      assert Brain.all("people") == ["José"]
     end
   end
 
@@ -30,7 +30,7 @@ defmodule Elix.BrainTest do
 
     test "deletes all items at key" do
       Brain.delete("people")
-      assert Brain.get("people") == []
+      assert Brain.all("people") == []
     end
   end
 
@@ -38,12 +38,12 @@ defmodule Elix.BrainTest do
 
     test "adds an item to a list at the given key" do
       Brain.add("people", "Steve")
-      assert Brain.get("people") == ["Jane", "Kate", "Steve"]
+      assert Brain.all("people") == ["Jane", "Kate", "Steve"]
     end
 
     test "creates a list if the key is empty" do
       Brain.add("does not exist", "Leonardo")
-      assert Brain.get("does not exist") == ["Leonardo"]
+      assert Brain.all("does not exist") == ["Leonardo"]
     end
   end
 
@@ -51,7 +51,7 @@ defmodule Elix.BrainTest do
 
     test "removes an item from a list at the given key" do
       Brain.remove("people", "Kate")
-      assert Brain.get("people") == ["Jane"]
+      assert Brain.all("people") == ["Jane"]
     end
 
     test "does not error if the item does not exist" do
