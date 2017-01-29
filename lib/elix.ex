@@ -6,14 +6,10 @@ defmodule Elix do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    redis_url = System.get_env("REDIS_URL") || "redis://"
-
     # Define workers and child supervisors to be supervised
     children = [
-      # Starts a worker by calling: Elix.Worker.start_link(arg1, arg2, arg3)
-      # worker(Elix.Worker, [arg1, arg2, arg3]),
       worker(Elix.Robot, []),
-      worker(Redix, [redis_url, [name: :redix]]),
+      worker(Elix.Brain, []),
       worker(Elix.MessageScheduler, []),
     ]
 

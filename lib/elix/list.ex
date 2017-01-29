@@ -3,11 +3,11 @@ defmodule Elix.List do
   An interface for manipulating lists of items in Redis.
   """
 
+  alias Elix.Brain
+
   defstruct name: "Untitled List", items: []
 
   @namespace "lists"
-  @redis_client Application.get_env(:elix, :redis_client)
-  @process :redix
 
   @doc """
   Returns a list of all lists by name.
@@ -17,14 +17,14 @@ defmodule Elix.List do
 
   """
   def all_names do
-    command!(["LRANGE", lists_key(), 0, -1])
+    Brain.get(@namespace)
   end
 
   @doc """
   Creates a new list by name, returning it.
   """
   def create(list_name) do
-    command!(["RPUSH", lists_key(), list_name])
+    Brain.add(@namespace, list_name)
 
     %__MODULE__{name: list_name, items: []}
   end
@@ -34,7 +34,7 @@ defmodule Elix.List do
   """
   def delete(%__MODULE__{name: list_name} = list) do
     clear_items(list)
-    command!(["LREM", lists_key(), 0, list_name])
+    Brain.remove(@namespace, list_name)
     :ok
   end
 
@@ -42,7 +42,7 @@ defmodule Elix.List do
   Adds an item to a list by name, returning the updated list.
   """
   def add_item(%__MODULE__{name: list_name} = list, item_name) do
-    command!(["RPUSH", list_key(list_name), item_name])
+    Brain.add(list_key(list_name), item_name)
 
     %{list | items: list.items ++ [item_name]}
   end
@@ -51,7 +51,7 @@ defmodule Elix.List do
   Deletes an item from a list by name, returning the updated list.
   """
   def delete_item(%__MODULE__{name: list_name} = list, item_name) do
-    command!(["LREM", list_key(list_name), 0, item_name])
+    Brain.remove(list_key(list_name), item_name)
 
     %{list | items: list.items -- [item_name]}
   end
@@ -60,7 +60,7 @@ defmodule Elix.List do
   Removes all items from a list by name, returning the updated list.
   """
   def clear_items(%__MODULE__{name: list_name} = list) do
-    command!(["DEL", list_key(list_name)])
+    Brain.delete(list_key(list_name))
 
     %{list | items: []}
   end
@@ -77,7 +77,7 @@ defmodule Elix.List do
 
   """
   def get_by_number(list_num) when is_integer(list_num) and list_num > 0 do
-    case command!(["LINDEX", lists_key(), list_num - 1]) do
+    case Brain.at_index(@namespace, list_num - 1) do
       nil  -> {:error, :list_not_found}
       name -> {:ok, %__MODULE__{name: name, items: get_items(name)}}
     end
@@ -118,7 +118,7 @@ defmodule Elix.List do
                                           and is_integer(item_num)
                                           and item_num > 0 do
 
-    case command!(["LINDEX", list_key(list_name), item_num - 1]) do
+    case Brain.at_index(list_key(list_name), item_num - 1) do
       nil  -> {:error, :item_not_found}
       name -> {:ok, name}
     end
@@ -148,19 +148,11 @@ defmodule Elix.List do
     get_items(list_name)
   end
   defp get_items(list_name) do
-    command!(["LRANGE", list_key(list_name), 0, -1])
-  end
-
-  defp command!(instructions) do
-    @redis_client.command!(@process, instructions)
-  end
-
-  defp lists_key do
-    @namespace
+    Brain.get(list_key(list_name))
   end
 
   defp list_key(list_name) do
-    "#{lists_key()}:#{to_key(list_name)}"
+    "#{@namespace}:#{to_key(list_name)}"
   end
 
   defp to_key(name) do

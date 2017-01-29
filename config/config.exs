@@ -24,9 +24,6 @@ config :elix, Elix.Robot,
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
-config :elix, :redis_client, Redix
-config :elix, :message_scheduler_store, Elix.MessageScheduler.RedisStore
-
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
