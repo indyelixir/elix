@@ -4,7 +4,7 @@ defmodule Elix.RedisStore.RedisStoreTest do
 
   setup do
     RedisStore.start_link
-    Redix.command!(:redis, ["FLUSHDB"])
+    RedisStore.delete_all
     RedisStore.set("people", ["Jane", "Kate"])
     :ok
   end

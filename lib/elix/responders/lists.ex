@@ -11,7 +11,13 @@ defmodule Elix.Responders.Lists do
   show lists - Displays all lists
   """
   respond ~r/show lists\Z/i, msg do
-    send(msg, render_items(List.all_names))
+    response =
+      case List.all_names do
+        [] -> "There are no lists yet."
+        lists -> render_items(lists)
+      end
+
+    send(msg, response)
   end
 
   @usage """

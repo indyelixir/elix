@@ -7,16 +7,19 @@ defmodule Elix.Brain.RedisStore do
   @encoded_binary_prefix "binterm:"
 
   def start_link do
-    redis_url = System.get_env("REDIS_URL") || "redis://"
+    redis_url = System.get_env("REDIS_URL") ||
+                Application.get_env(:elix, :redis_url, "redis://")
+
     {:ok, _pid} = Redix.start_link(redis_url, name: :redis)
   end
 
   @spec set(String.t, list) :: any
   def set(key, list) do
-    command!(["DEL", key])
-    Enum.each(list, fn (item) ->
-      command!(["RPUSH", key, encode_if_necsssary(item)])
-    end)
+    transaction fn ->
+      command!(["DEL", key])
+      items = Enum.map(list, &encode_if_necsssary(&1))
+      command!(["RPUSH", key] ++ items)
+    end
   end
 
   @spec get(String.t) :: list
@@ -25,7 +28,7 @@ defmodule Elix.Brain.RedisStore do
     Enum.map(list, &decode_if_necessary/1)
   end
 
-  @spec get(String.t) :: any
+  @spec delete(String.t) :: any
   def delete(key) do
     command!(["DEL", key])
   end
@@ -35,23 +38,32 @@ defmodule Elix.Brain.RedisStore do
     command!(["RPUSH", key, encode_if_necsssary(item)])
   end
 
-  @spec add(String.t, any) :: any
+  @spec remove(String.t, any) :: any
   def remove(key, item) do
     command!(["LREM", key, 0, encode_if_necsssary(item)])
   end
 
-  @spec add(String.t, integer) :: any
+  @spec at_index(String.t, integer) :: any
   def at_index(key, index) do
     item = command!(["LINDEX", key, index])
     decode_if_necessary(item)
   end
 
+  @spec delete_all :: :ok
+  def delete_all do
+    command!(["FLUSHDB"])
+    :ok
+  end
+
+  defp transaction(func) do
+    command!(["MULTI"])
+    func.()
+    command!(["EXEC"])
+  end
+
+  defp encode_if_necsssary(term) when is_binary(term), do: term
   defp encode_if_necsssary(term) do
-    if is_binary(term) do
-      term
-    else
-      @encoded_binary_prefix <> :erlang.term_to_binary(term)
-    end
+    @encoded_binary_prefix <> :erlang.term_to_binary(term)
   end
 
   defp decode_if_necessary(@encoded_binary_prefix <> binary) do

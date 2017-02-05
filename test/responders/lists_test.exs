@@ -25,6 +25,14 @@ defmodule Elix.Responders.ListsTest do
       """
     end
 
+    test "'show lists' says when there are no lists", %{adapter: adapter, msg: msg} do
+      Brain.delete("lists")
+      send adapter, {:message, %{msg | text: to_bot("show lists")}}
+
+      assert_receive {:message, %{text: text}}
+      assert text == "There are no lists yet."
+    end
+
     test "'create list' creates a list", %{adapter: adapter, msg: msg} do
       send adapter, {:message, %{msg | text: to_bot("create list Robot Features")}}
 
