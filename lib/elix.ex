@@ -9,7 +9,7 @@ defmodule Elix do
     # Define workers and child supervisors to be supervised
     children = [
       worker(Elix.Robot, []),
-      worker(Elix.Brain, []),
+      worker(Hedwig.Brain, []),
       worker(Elix.MessageScheduler, []),
     ]
 

@@ -3,7 +3,7 @@ defmodule Elix.List do
   An interface for manipulating lists of items in Redis.
   """
 
-  alias Elix.Brain
+  alias Hedwig.Brain
 
   defstruct name: "Untitled List", items: []
 

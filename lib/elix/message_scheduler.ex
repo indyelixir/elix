@@ -4,7 +4,7 @@ defmodule Elix.MessageScheduler do
   """
   use GenServer
   alias Elix.MessageScheduler.ScheduledMessage
-  alias Elix.Brain
+  alias Hedwig.Brain
 
   @namespace "scheduled_messages"
 

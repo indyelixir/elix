@@ -1,7 +1,7 @@
 defmodule Elix.Responders.ListsTest do
   use Hedwig.RobotCase
   import Elix.MessageHelpers
-  alias Elix.Brain
+  alias Hedwig.Brain
 
   @moduletag start_robot: true, name: bot_name(), responders: [{Elix.Responders.Lists, []}]
 

@@ -1,6 +1,6 @@
 defmodule Elix.ListTest do
   use ExUnit.Case, async: true
-  alias Elix.Brain
+  alias Hedwig.Brain
 
   doctest Elix.List
 
