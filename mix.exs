@@ -39,7 +39,7 @@ defmodule Elix.Mixfile do
       {:hedwig, "~> 1.0"},
       {:hedwig_flowdock, github: "stevegrossi/hedwig_flowdock"},
       {:hedwig_giphy, "~> 0.1"},
-      {:hedwig_brain, github: "stevegrossi/hedwig_brain"},
+      {:hedwig_brain, "~> 0.1"},
       {:honeybadger, "~> 0.1", only: [:prod]},
       {:credo, "~> 0.4", only: [:dev, :test]},
       {:mix_test_watch, "~> 0.2", only: :dev}
