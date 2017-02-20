@@ -30,17 +30,12 @@ defmodule Elix.MessageScheduler do
   end
 
   def handle_cast(:init, _state) do
-    state =
-      @namespace
-      |> Brain.get
-      |> Enum.map(&decode/1)
-
     heartbeat()
-    {:noreply, state}
+    {:noreply, Brain.get(@namespace)}
   end
 
   def handle_cast({:schedule, %ScheduledMessage{} = scheduled_message}, state) do
-    Brain.add(@namespace, encode(scheduled_message))
+    Brain.add(@namespace, scheduled_message)
 
     {:noreply, [scheduled_message | state]}
   end
@@ -56,7 +51,7 @@ defmodule Elix.MessageScheduler do
       |> Stream.map(fn (%ScheduledMessage{message: message, timestamp: timestamp} = scheduled_message) ->
            if timestamp <= :os.system_time(:seconds) do
              GenServer.cast(Elix.Robot, message)
-             Brain.remove(@namespace, encode(scheduled_message))
+             Brain.remove(@namespace, scheduled_message)
              nil
            else
              scheduled_message
@@ -70,15 +65,5 @@ defmodule Elix.MessageScheduler do
 
   defp heartbeat do
     Process.send_after(self(), :heartbeat, :timer.seconds(1))
-  end
-
-  # This is unnecessary for the process brain. I feel like
-  # it should be a concern of the Redis brain.
-  defp encode(message) do
-    :erlang.term_to_binary(message)
-  end
-
-  defp decode(binary) do
-    :erlang.binary_to_term(binary)
   end
 end
